@@ -67,7 +67,8 @@ We use dropdown boxes mainly as interaction methodes because the types of "langu
 
 Lock checkboxes are for fixing the selected items of the dropboxes. We want to translate the selected colorname instantly, while enabling people to compare arbitary two colors. So we brainstromed bunch of possible UI to control the mode (auto translation mode / comparing mode) of ColorTranslater (like below). And we decided to provide lock checkbox due to its' simplicity.
 
-![interface](storyboard/interface_candidates.png)
+<img src="storyboard/interface_candidates.jpg" height="480">
+
 
 
 ### Changes between Storyboard and the Final Implementation
