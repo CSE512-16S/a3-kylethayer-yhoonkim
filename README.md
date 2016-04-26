@@ -26,6 +26,47 @@ If you put your work online, please also write a [one-line description and add a
 
 ## Story Board
 
+We considered three stories of using Color Translater.
+
+1. Translate a colorname in another language.
+2. See what color a colorname indicates 
+3. Compare two colornames by their corresponding colors.  
+4. Explore the color-colorname-language space.
+
+To address these stories, we suggested the interface like the below.
+![interface_overview.png](...)
+
+
+#### 1. Translate a color in another language.
+
+- Pick a colorname's language to translate from left language dropdown box (the upper left one).
+- Pick the colorname from left colorname dropdown box (the bottom left one).
+- Pick a language to translate in from right language dropdown box (the upper right one).
+- Then, translated colornames will be shown under the right colorname dropdown boxes in the decending order of similarity.
+
+#### 2. See what color a colorname indicates.
+
+- Pick a colorname's language to translate from left language dropdown box (the upper left one).
+- Pick the colorname from left colorname dropdown box (the bottom left one).
+- Then, a corresponding color region will be shown on the color map.
+
+#### 3. Compare two colornames by their corresponding colors.
+
+- Pick first colorname, and its language from left dropdown boxes.
+- Check "lock" checkbox to lock the colorname.
+- Pick second colorname, and its language from right dropdown boxes.
+- Then, two corresponding color regions will be shown on the color map.
+
+#### 4. Explore the color-colorname-language space.
+
+- Users can see the color regions of the translated colornames on the map by hovering their mouse cursor.
+- Iteratively doing #1,#2, and #3, user can explore the color-colorname-language space.
+
+The description should include a storyboard of the interface/displays you will create. 
+Be sure to explain the features of your application. 
+Most importantly you should explain why the interaction techniques you will implement will be effective in the context of your data domain. 
+
+
 Put either your storyboard content or a [link to your storyboard pdf file](storyboard.pdf?raw=true) here. Just like A2, you can use any software to create a *reasonable* pdf storyboard.
 
 
