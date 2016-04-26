@@ -34,7 +34,7 @@ We considered three stories of using Color Translater.
 4. Explore the color-colorname-language space.
 
 To address these stories, we suggested the interface like the below.
-![interface_overview.png](...)
+![interface](storyboard/interface_overview.png)
 
 
 #### 1. Translate a color in another language.
@@ -62,12 +62,12 @@ To address these stories, we suggested the interface like the below.
 - Users can see the color regions of the translated colornames on the map by hovering their mouse cursor.
 - Iteratively doing #1,#2, and #3, user can explore the color-colorname-language space.
 
-The description should include a storyboard of the interface/displays you will create. 
-Be sure to explain the features of your application. 
-Most importantly you should explain why the interaction techniques you will implement will be effective in the context of your data domain. 
 
+We use dropdown boxes mainly as interaction methodes because the types of "language" and "colorname" in our dataset are nominal, and it is easy to implement. Like NameVoyager, using keyboard could give more freedom and easy access to explore the languages and colornames. We set this as the stretch-goal in order to meet the schedule. 
 
-Put either your storyboard content or a [link to your storyboard pdf file](storyboard.pdf?raw=true) here. Just like A2, you can use any software to create a *reasonable* pdf storyboard.
+Lock checkboxes are for fixing the selected items of the dropboxes. We want to translate the selected colorname instantly, while enabling people to compare arbitary two colors. So we brainstromed bunch of possible UI to control the mode (auto translation mode / comparing mode) of ColorTranslater (like below). And we decided to provide lock checkbox due to its' simplicity.
+
+![interface](storyboard/interface_candidates.png)
 
 
 ### Changes between Storyboard and the Final Implementation
