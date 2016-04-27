@@ -1,0 +1,259 @@
+<html>
+<head>
+<script src="../js/jquery-1.12.0.min.js"></script>
+<script src="SOM.js"></script>
+<script src="color-utils.js"></script>
+
+<script>
+var connString = "http://carlise.cs.washington.edu:3000"
+var languages = {};
+var currentLanguage = 1;
+var currentOtherLanguage = 37;
+var currentColor = "sky blue";
+var currentColorValues = {};
+
+
+function start(){
+	loadLanguages();
+	loadColor();
+}
+
+
+
+function loadLanguages(){
+	$.get(connString + "/languages",
+		function(data) {
+		  for (var i = 0; i < data.length; ++i) {
+			languages[data[i].language_id] = data[i].name;
+		  }
+		}
+	);
+}
+
+function loadColor(){
+	$.ajax({
+		url: connString + "/answers?",
+		data: {
+			select: "color_name,color{color_id,r,g,b},assignments{assignment_id,languages{language_id}}", 
+			color_name: "eq." + currentColor,
+			"assignments.languages.language_id": "eq." + currentLanguage
+		},
+		success: function(data) {
+			for (var i = 0; i < data.length; i++) {
+				if(typeof currentColorValues[data[i].color.color_id] === "undefined"){
+					currentColorValues[data[i].color.color_id] = {
+						r: data[i].color.r,
+						g: data[i].color.g,
+						b: data[i].color.b,
+						names: {}
+					};
+				}
+			}
+			loadColorsInOtherLanguage();
+		}
+		
+	});
+	
+}
+
+function loadColorsInOtherLanguage(){
+	//http://carlise.cs.washington.edu:3000/answers?select=color_name,color{color_id,r,g,b},assignments{assignment_id,languages{language_id}}&assignments.languages.language_id=eq.1&color.color_id=in.13,28
+	var color_ids = Object.keys(currentColorValues)
+	
+	$.ajax({
+		url: connString + "/answers?",
+		data: {
+			select: "color_name,color{color_id,r,g,b},assignments{assignment_id,languages{language_id}}",
+			"assignments.languages.language_id": "in." + currentLanguage + "," + currentOtherLanguage,
+			"color.color_id": "in." + color_ids.join()
+		},
+		traditional: true,
+		success: function(data) {
+			for (var i = 0; i < data.length; i++) {
+				if(data[i].color === null || data[i].assignments.languages === null){
+					continue;
+				}
+				langId = data[i].assignments.languages.language_id
+				if(typeof currentColorValues[data[i].color.color_id].names[langId] === "undefined"){
+					currentColorValues[data[i].color.color_id].names[langId] = {};
+					currentColorValues[data[i].color.color_id].names[langId][data[i].color_name] = 1;
+				}else{
+					if(typeof currentColorValues[data[i].color.color_id].names[langId][data[i].color_name] === "undefined"){
+						currentColorValues[data[i].color.color_id].names[langId][data[i].color_name] = 1;
+					} else {
+						currentColorValues[data[i].color.color_id].names[langId][data[i].color_name]++;
+					}
+				}
+
+			}
+			var otherLanguageNames = {};
+			for(var color_id in currentColorValues){
+				var namesForColor = currentColorValues[color_id].names[currentOtherLanguage];
+				for(var name in namesForColor){
+					otherLanguageNames[name] = true;
+				}
+			}
+			
+			backLoadOtherLanguageColors(otherLanguageNames)
+			
+			
+			
+		}
+		
+	});
+}
+
+
+function backLoadOtherLanguageColors(otherLanguageNames){
+	var color_names = Object.keys(otherLanguageNames)
+	$.ajax({
+		url: connString + "/answers?",
+		data: {
+			select: "color_name,color{color_id,r,g,b},assignments{assignment_id,languages{language_id}}", 
+			color_name: "in." + color_names.join(),
+			"assignments.languages.language_id": "in." + currentLanguage + "," + currentOtherLanguage
+		},
+		success: function(data) {
+			var oldColorIds = Object.keys(currentColorValues);
+			
+			
+			for (var i = 0; i < data.length; i++) {
+				if(data[i].color === null || data[i].assignments.languages === null){
+					continue;
+				}
+				
+				var color_id = data[i].color.color_id;
+				
+				if(oldColorIds.includes(color_id)){ //if we've already seen this color, skip
+					continue;
+				}
+				
+				//add if needed
+				if(typeof currentColorValues[color_id] === "undefined"){
+					currentColorValues[color_id] = {
+						r: data[i].color.r,
+						g: data[i].color.g,
+						b: data[i].color.b,
+						names: {}
+					};
+				}
+				
+				langId = data[i].assignments.languages.language_id
+				if(typeof currentColorValues[color_id].names[langId] === "undefined"){
+					currentColorValues[color_id].names[langId] = {};
+					currentColorValues[color_id].names[langId][data[i].color_name] = 1;
+				}else{
+					if(typeof currentColorValues[color_id].names[langId][data[i].color_name] === "undefined"){
+						currentColorValues[color_id].names[langId][data[i].color_name] = 1;
+					} else {
+						currentColorValues[color_id].names[langId][data[i].color_name]++;
+					}
+				}
+
+			}
+			
+			createSOM();
+			listColorNames();
+		}
+		
+	});
+	
+	
+	
+
+}
+
+function createSOM(){
+	var testsom = new som(100, 100, 3);
+	var data = [];
+	for(var color_id in currentColorValues){
+		data.push([currentColorValues[color_id].r, currentColorValues[color_id].g, currentColorValues[color_id].b]);
+	}
+	data.sort(function() {
+	  return .5 - Math.random();
+	});
+	testsom.train(data, 2000);
+	
+	//TODO: create distance function that incorporates naming
+	//TODO: initialize SOM to all values
+	drawSOM(testsom);
+
+}
+
+function drawSOM(testsom){
+	var div = document.getElementById("SOM");
+	var str = "";
+	
+	for(var i = 0; i < testsom.neurons.length; i++){
+		for(var j = 0; j < testsom.neurons[0].length; j++){
+			var color = testsom.neurons[i][j].weights;
+			for(var k = 0; k < color.length; k++){
+				color[k] = Math.round(color[k]);
+			}
+			
+			//TODO: reverse look up color (-> hsv -> round)
+			
+			
+			str += "<DIV style='background-color:rgb("+
+				color[0]+","+color[1]+","+color[2]+
+				");width:4px;height:4px;float:left'></DIV>";
+		}
+		str += "<DIV style='clear:both;'></DIV>";
+	}
+
+	div.innerHTML = str;
+}
+
+function listColorNames(){
+	var div = document.getElementById("Lang1Colors");
+	var names1 = getColorNames(currentLanguage);
+	var str = "";
+	for(var name in names1){
+		str += name + ": " + names1[name] + "<br>"
+	}
+	div.innerHTML = str;
+	
+	var div2 = document.getElementById("Lang2Colors");
+	var names2 = getColorNames(currentOtherLanguage);
+	var str2 = "";
+	for(var name in names2){
+		str2 += name + ": " + names2[name] + "<br>"
+	}
+	div2.innerHTML = str2;
+}
+
+function getColorNames(langId){
+	var finalColorNames = {};
+	for(var color_id in currentColorValues){
+		var colorInfo = currentColorValues[color_id];
+		if (typeof colorInfo.names[langId] !== undefined){
+			for(var colorName in colorInfo.names[langId]){
+				if(typeof finalColorNames[colorName] === "undefined"){
+					finalColorNames[colorName] = colorInfo.names[langId][colorName];
+				} else {
+					finalColorNames[colorName] += colorInfo.names[langId][colorName];
+				}
+			}
+		}
+	}
+	return finalColorNames;
+}
+
+
+
+
+
+</script>
+</head>
+<body onload = "start()">
+Self-Organizing Map test
+<div id = "SOM">
+</div>
+
+<div id = "Lang1Colors" style="float:left;">
+</div>
+<div id = "Lang2Colors">
+</div>
+
+</body>
+</html>
