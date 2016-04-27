@@ -4,6 +4,7 @@
 <link href="css/color-translator.css" rel="stylesheet">
 
 <script src="js/jquery-1.12.0.min.js"></script>
+<script src="js/d3.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="SOM.js"></script>
 <script src="color-utils.js"></script>
@@ -120,10 +121,47 @@ function createSOM(){
 	
 	//TODO: create distance function that incorporates naming
 	//TODO: initialize SOM to all values
-	drawSOM(testsom, "SOM1");
+	drawSOMByD3(testsom, "SOM1");
+	// drawSOM(testsom, "SOM1");
 	drawSOM(testsom, "SOM2");
 
 }
+
+function drawSOMByD3(testsom, divID){
+	var data = testsom.neurons.reduce(function(prev, neuron, i){
+		return prev.concat(neuron.map(function(n,j){
+			var color = n.weights.map(function(w){ return Math.round(w); });
+			var result = {"color": color};
+			result["colorInfo"] = JSON.parse(JSON.stringify(reverseLookup({r: color[0], g: color[1], b: color[2]})[0]));
+			result["x"]=j;
+			result["y"]=i;
+			return result;
+		}))
+	},[]);
+
+	var width = 400, 
+			height = 400;
+
+  var svg = d3.select("#"+divID).append("svg")
+      .attr("width", width )
+      .attr("height", height )
+
+  var somNodes = svg.selectAll(".som-node")
+ 			.data(data)
+ 			.enter()
+ 				.append("rect")
+ 				.attr("class","som-node")
+ 				.attr("x", function(d){ return d.x * 20; })
+ 				.attr("y", function(d){ return d.y * 20; })
+ 				// .attr("rx",1)
+ 				// .attr("ry",1)
+ 				.attr("width", 20)
+ 				.attr("height", 20)
+ 				.style("fill", function(d){ return "rgb(" + d.color[0] + "," + d.color[1] + "," + d.color[2] +")"});
+
+					 	
+}
+
 
 function drawSOM(testsom, divName){
 	var div = document.getElementById(divName);
@@ -252,7 +290,7 @@ function highlightColor(lang, colorName){
 	var divName = "SOM1";
 	if(lang != currentLanguage){
 		langStr = "other";
-		divName = "SOM2"
+		// divName = "SOM2"
 	}
 	$(".nameSpan").each(function(i){
 		if(this.attributes["lang"].nodeValue == langStr){
@@ -267,7 +305,7 @@ function highlightColor(lang, colorName){
 
 	});
 	
-	$("."+divName+"-node").each(function(i){
+	$("#" + divName + " .som-node").each(function(i){
 		if(typeof this.attributes["lang" + lang] != "undefined"){
 			var names = this.attributes["lang" + lang].nodeValue.split(",");
 			if(names.includes(colorName)){
@@ -278,6 +316,15 @@ function highlightColor(lang, colorName){
 		} else{
 			this.innerHTML = "";
 		}
+
+		if(this.__data__.colorInfo.names[lang].hasOwnProperty(colorName)){
+			this.style.strokeWidth = 1;
+			this.style.stroke = 'black';
+		}
+		else {
+			this.style.stroke = null;
+		}
+
 	});
 	
 }
@@ -286,10 +333,8 @@ function highlightColor(lang, colorName){
 
 
 function nameMouseOver(element){
-	var divName = "SOM1";
 	var lang = currentLanguage;
 	if(element.attributes.lang.nodeValue == "other"){
-		divName = "SOM2";
 		lang = currentOtherLanguage;
 	}
 	
@@ -306,14 +351,20 @@ function nameMouseOver(element){
 		} else{
 			this.style.opacity = .75;
 		}
+
+		
+		if(this.__data__.colorInfo.names[lang].hasOwnProperty(currentMouseOver[lang])){
+			this.style.opacity = 1;
+		}
+		else {
+			this.style.opacity = .75;
+		}
 	});
 }
 
 function nameMouseLeave(element){
-	var divName = "SOM1";
 	var lang = currentLanguage;
 	if(element.attributes.lang.nodeValue == "other"){
-		divName = "SOM2";
 		lang = currentOtherLanguage;
 	}
 	
