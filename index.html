@@ -50,7 +50,7 @@ function languageDropdowns(languages){
 	languages.sort(function(a,b){
 		return b.num_answers - a.num_answers;
 	});
-	var str = "<select class='form-control' onchange='selectLang(this);' col=1 '>";
+	var str = "<select class='form-control' onchange='selectLang(this);' style='width:50%'>";
 	languages.forEach(function(lang) {
 		str += "<option value = '"+lang["language"] +"' ";
 		if(lang["language"] == currentLanguage){
@@ -62,7 +62,7 @@ function languageDropdowns(languages){
 	var div = document.getElementById("lang1Dropdown");
 	div.innerHTML = str;
 	
-	var str = "<select class='form-control' onchange='selectLang(this);' col=2 >";
+	var str = "<select class='form-control' onchange='selectLang(this);' style='width:50%'>";
 	languages.forEach(function(lang) {
 		str += "<option value = '"+lang["language"]+ "' ";
 		if(lang["language"] == currentOtherLanguage){
@@ -76,7 +76,7 @@ function languageDropdowns(languages){
 }
 
 function colorDropdowns1(colors){
-	var str = "<select class='form-control' onchange='selectColorDropdown(this);' col=1>";
+	var str = "<select class='form-control' onchange='selectColorDropdown(this);' style='width:50%'>";
 	if(currentColor == ""){
 		//TODO: correctly populate currentColor
 		currentColor = colors[0]["color_name"];
@@ -95,7 +95,7 @@ function colorDropdowns1(colors){
 	
 //TODO: merge these two functions
 function colorDropdowns2(colors){
-	var str = "<select class='form-control' onchange='selectColorDropdown(this);' col=2 >" +
+	var str = "<select class='form-control' onchange='selectColorDropdown(this);' style='width:50%'>" +
 					"<option value = '' selcted = true></option>";
 	colors.forEach(function(color) {
 		str += "<option value = '"+color["color_name"] +"' ";
@@ -420,8 +420,11 @@ function selectColor(lang1, lang2, colorName){
         <div id="language1" class="lang-region col-xs-6">
           <div id="SOM1" class="SOM"></div>
 		  <br>
-		  <div id="lang1Dropdown"></div>
-          <div id="lang1ColorSelector"></div>
+		  <div style="float:left;margin-right:15px">Language: </div><div id="lang1Dropdown"></div>
+		  <br>
+		  Lock Color: <input type="checkbox" id="lock1" />
+		  <br>
+          <div style="float:left;margin-right:45px">Color: </div><div id="lang1ColorSelector"></div>
           <div id="Lang1Colors">
             <div class="name-list">
               <b>Matching Colors</b>
@@ -437,8 +440,12 @@ function selectColor(lang1, lang2, colorName){
         <div id="language2" class="lang-region col-xs-6">
           <div id="SOM2" class="SOM"></div>
 		  <br>
-		  <div id="lang2Dropdown"></div>
-          <div id="lang2ColorSelector"></div>
+		  <div style="float:left;margin-right:15px">Language: </div><div id="lang2Dropdown"></div>
+		  <br>
+		  Lock Color: <input type="checkbox" id="lock2" />
+		  <br>
+          <div style="float:left;margin-right:45px">Color: </div><div id="lang2ColorSelector"></div>
+		  <br>
           <div id="Lang2Colors">
             <div class="name-list">
               <b>Matching Colors</b>
