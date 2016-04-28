@@ -51,7 +51,7 @@ function languageDropdowns(languages){
 	languages.sort(function(a,b){
 		return b.num_answers - a.num_answers;
 	});
-	var str = "<select class='form-control' onchange='selectLang(this);' style='width:50%'>";
+	var str = "<select class='form-control' onchange='selectLang(this);' style='width:50%' col='1'>";
 	languages.forEach(function(lang) {
 		str += "<option value = '"+lang["language"] +"' ";
 		if(lang["language"] == currentLanguage){
@@ -63,7 +63,7 @@ function languageDropdowns(languages){
 	var div = document.getElementById("lang1Dropdown");
 	div.innerHTML = str;
 	
-	var str = "<select class='form-control' onchange='selectLang(this);' style='width:50%'>";
+	var str = "<select class='form-control' onchange='selectLang(this);' style='width:50%' col='2'>";
 	languages.forEach(function(lang) {
 		str += "<option value = '"+lang["language"]+ "' ";
 		if(lang["language"] == currentOtherLanguage){
@@ -77,7 +77,7 @@ function languageDropdowns(languages){
 }
 
 function colorDropdowns1(colors){
-	var str = "<select class='form-control' onchange='selectColorDropdown(this);' style='width:50%'>";
+	var str = "<select class='form-control' onchange='selectColorDropdown(this);' style='width:50%' col='1'>";
 	if(currentColor == ""){
 		//TODO: correctly populate currentColor
 		currentColor = colors[0]["color_name"];
@@ -96,7 +96,7 @@ function colorDropdowns1(colors){
 	
 //TODO: merge these two functions
 function colorDropdowns2(colors){
-	var str = "<select class='form-control' onchange='selectColorDropdown(this);' style='width:50%'>" +
+	var str = "<select class='form-control' onchange='selectColorDropdown(this);' style='width:50%' col='2'>" +
 					"<option value = '' selcted = true></option>";
 	colors.forEach(function(color) {
 		str += "<option value = '"+color["color_name"] +"' ";
