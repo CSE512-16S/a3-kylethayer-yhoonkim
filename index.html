@@ -13,8 +13,10 @@
 
 <script>
 
+var currentLanguages = ["english", "spanish"]; //indexes are 0 for left, 1 for right
 var currentLanguage = "english";
 var currentOtherLanguage = "spanish";
+var currentColors = ["", ""];
 var currentColor = "";
 
 var currentMouseOver = {};
@@ -31,10 +33,10 @@ function start(){
 
 	loadAllColors(function(){
 		draw(sorted_color_names_by_lang_name(currentLanguage), function(data){
-			colorDropdowns1(data);
+			drawColorDropdowns(data, 0)
 			loadSOM();
 		});
-		draw(sorted_color_names_by_lang_name(currentOtherLanguage), colorDropdowns2);
+		draw(sorted_color_names_by_lang_name(currentOtherLanguage), function(data){drawColorDropdowns(data, 1)});
 		//drawColorDropdowns();
 
 	});
@@ -48,38 +50,33 @@ function loadSOM(){
 }
 
 function languageDropdowns(languages){
+	singleLanguageDropdown(languages, 0);
+	singleLanguageDropdown(languages, 1);
+}
+
+function singleLanguageDropdown(languages, side){ //side is 0 for left, 1 for right
 	languages.sort(function(a,b){
 		return b.num_answers - a.num_answers;
 	});
-	var str = "<select class='form-control' onchange='selectLang(this);' style='width:50%' col='1'>";
+	
+	var str = "<select class='form-control' onchange='selectLang(this);' style='width:50%' col="+(side+1)+">";
 	languages.forEach(function(lang) {
 		str += "<option value = '"+lang["language"] +"' ";
-		if(lang["language"] == currentLanguage){
+		if(lang["language"] == currentLanguages[side]){
 			str += " selected = true ";
 		}
 		str += ">" + lang["language"] + "</option>";
 	});
 	str += "<select>"
-	var div = document.getElementById("lang1Dropdown");
-	div.innerHTML = str;
-	
-	var str = "<select class='form-control' onchange='selectLang(this);' style='width:50%' col='2'>";
-	languages.forEach(function(lang) {
-		str += "<option value = '"+lang["language"]+ "' ";
-		if(lang["language"] == currentOtherLanguage){
-			str += " selected = true ";
-		}
-		str += ">" + lang["language"] + "</option>";
-	});
-	str += "<select>"
-	var div = document.getElementById("lang2Dropdown");
+	var div = document.getElementById("lang"+(side+1)+"Dropdown");
 	div.innerHTML = str;
 }
 
-function colorDropdowns1(colors){
+function drawColorDropdowns(colors, side){//side is 0 for left, 1 for right
 	var str = "<select class='form-control' onchange='selectColorDropdown(this);' style='width:50%' col='1'>";
-	if(currentColor == ""){
+	if(currentColors[side] == ""){
 		//TODO: correctly populate currentColor
+		currentColors[side] = colors[0]["color_name"];
 		currentColor = colors[0]["color_name"];
 	}
 	colors.forEach(function(color) {
@@ -90,20 +87,7 @@ function colorDropdowns1(colors){
 		str += ">" + color["color_name"] + "</option>";
 	});
 	str += "<select>"
-	var div = document.getElementById("lang1ColorSelector");
-	div.innerHTML = str;
-}
-	
-//TODO: merge these two functions
-function colorDropdowns2(colors){
-	var str = "<select class='form-control' onchange='selectColorDropdown(this);' style='width:50%' col='2'>" +
-					"<option value = '' selcted = true></option>";
-	colors.forEach(function(color) {
-		str += "<option value = '"+color["color_name"] +"' ";
-		str += ">" + color["color_name"] + "</option>";
-	});
-	str += "<select>"
-	var div = document.getElementById("lang2ColorSelector");
+	var div = document.getElementById("lang"+(side+1)+"ColorSelector");
 	div.innerHTML = str;
 }
 
@@ -403,10 +387,10 @@ function selectLang(element){
 
 	loadAllColors(function(){
 		draw(sorted_color_names_by_lang_name(currentLanguage), function(data){
-			colorDropdowns1(data);
+			drawColorDropdowns(data, 0)
 			loadSOM();
 		});
-		draw(sorted_color_names_by_lang_name(currentOtherLanguage), colorDropdowns2);
+		draw(sorted_color_names_by_lang_name(currentOtherLanguage), function(data){drawColorDropdowns(data, 1);});
 	});
 }
 
@@ -435,8 +419,8 @@ function selectColor(lang1, lang2, colorName){
 	currentSelected[currentOtherLanguage] = "";
 
 	draw(num_answers_by_lang, languageDropdowns);
-	draw(sorted_color_names_by_lang_name(currentLanguage), colorDropdowns1);
-	draw(sorted_color_names_by_lang_name(currentOtherLanguage), colorDropdowns2);
+	draw(sorted_color_names_by_lang_name(currentLanguage), function(data){drawColorDropdowns(data, 0);});
+	draw(sorted_color_names_by_lang_name(currentOtherLanguage), function(data){drawColorDropdowns(data, 1);});
 	loadSOM();
 }
 
