@@ -27,8 +27,19 @@ var currentSelected = {};
 currentSelected[currentLanguage] = "";
 currentMouseOver[currentOtherLanguage] = "";
 
+var N=40, M=20;
+var d3Data =[];
+var svg, somNodes;
+
+var somWidth = 800;
+var boxWidth = somWidth / N;
+var boxHeight = boxWidth;
+var somHeight = M * boxWidth;
+
+
 function start(){
 	$('#nav-translator').addClass('active');
+	drawSOMByD3(N, M, "SOM");
 	draw(num_answers_by_lang, languageDropdowns);
 
 	loadAllColors(function(){
@@ -92,7 +103,7 @@ function drawColorDropdowns(colors, side){//side is 0 for left, 1 for right
 }
 
 function createSOM(){
-	var testsom = new som(40, 20, 3);
+	var testsom = new som(N, M, 3);
 	var data = [];
 	for(var i in currentColorIds){
 		var color_id = currentColorIds[i];
@@ -105,12 +116,16 @@ function createSOM(){
 	
 	//TODO: create distance function that incorporates naming
 	//TODO: initialize SOM to all values
-	drawSOMByD3(testsom, "SOM");
+	
+	updateSOM(testsom, "SOM");
 
 }
 
-function drawSOMByD3(testsom, divID){
-	var data = testsom.neurons.reduce(function(prev, neuron, i){
+function updateSOM(testsom, divID){
+
+
+
+	var d3Data = testsom.neurons.reduce(function(prev, neuron, i){
 		return prev.concat(neuron.map(function(n,j){
 			var color = n.weights.map(function(w){ return Math.round(w); });
 			var result = {"color": color};
@@ -121,19 +136,10 @@ function drawSOMByD3(testsom, divID){
 		}))
 	},[]);
 
-	var width = 800;
-	var boxWidth = width / testsom.neurons.length;
-	var boxHeight = boxWidth;
-	var height = testsom.neurons[0].length * boxWidth;
-
-  var svg = d3.select("#"+divID).append("svg")
-      .attr("width", width )
-      .attr("height", height )
-      .style("background-color","black")
-
-  var somNodes = svg.selectAll(".som-node")
- 			.data(data)
- 			.enter()
+	somNodes = svg.selectAll(".som-node")
+ 			.data(d3Data);
+ 	
+ 	somNodes.enter()
  				.append("g")
  				.attr("class","som-node");
 
@@ -150,11 +156,17 @@ function drawSOMByD3(testsom, divID){
 	 				.attr("x", function(d){ return (d.x+0.5) * boxWidth; })
 	 				.attr("y", function(d){ return (d.y+0.75) * boxHeight; })
 	 				.attr("text-anchor", "middle")
-	 				.text("")
-	 				.attr("class",".som-node-text");
+	 				.attr("class",".som-node-text")
+	 				.append("text").text("");
+}
 
 
-					 	
+
+function drawSOMByD3(n, m, divID){
+  svg = d3.select("#"+divID).append("svg")
+      .attr("width", somWidth )
+      .attr("height", somHeight )
+      .style("background-color","black")
 }
 
 
