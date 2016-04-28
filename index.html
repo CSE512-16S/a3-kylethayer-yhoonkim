@@ -137,10 +137,9 @@ function drawSOMByD3(testsom, divID){
 		}))
 	},[]);
 
-	var boxWidth = 20,
-		boxHeight = 20;
-	
-	var width = testsom.neurons.length * boxWidth;
+	var width = 800;
+	var boxWidth = width / testsom.neurons.length;
+	var boxHeight = boxWidth;
 	var height = testsom.neurons[0].length * boxWidth;
 
   var svg = d3.select("#"+divID).append("svg")
