@@ -161,29 +161,27 @@ function drawSOMByD3(testsom, divID){
 function colorNameSpan(name, lang){
 	str = "<span onmouseenter='nameMouseOver(this);' onmouseleave='nameMouseLeave(this);' " +
 				"onclick='nameMouseClick(this);' ondblclick='nameMouseDblClick(this);' " + 
-				"class = 'nameSpan'" +
+				"class = 'nameSpan' " +
 				"name='"+name+"' lang='"+lang+"'>" + 
-					name +  
-				"</span><br>";
+					name + "," +  
+				"</span> ";
 	return str;
 }
 
 function listColorNames(){
-	var lang1ColorName = listColorNamesForLang(currentLanguage);
-	var lang2ColorName = listColorNamesForLang(currentOtherLanguage);
+	var lang1ColorName = listColorNamesForLang(0);
+	var lang2ColorName = listColorNamesForLang(1);
 	highlightColor(lang1ColorName, lang2ColorName);
 }
 
-function listColorNamesForLang(lang){
+function listColorNamesForLang(side){
+    var lang = currentLanguages[side]
 	var langStr = "current";
-	var divName = "Lang1Colors";
 	if(lang != currentLanguage){
 		langStr = "other";
-		divName = "Lang2Colors"
 	}
 	
-	var matchingDiv = document.getElementById(divName).getElementsByClassName("matchingColorNames")[0];
-	var similarDiv = document.getElementById(divName).getElementsByClassName("similarColorNames")[0];
+	var similarDiv = document.getElementById("Lang"+(side+1)+"Colors").getElementsByClassName("similarColorNames")[0];
 	var ret = getColorNames(lang, currentColor, currentLanguage);
 	var matchingColorNamesArray = ret[0];
 	var unMatchingColorNamesArray = ret[1];
@@ -193,22 +191,21 @@ function listColorNamesForLang(lang){
 		var spanStr =  colorNameSpan(
 						matchingColorNamesArray[i].name,  
 						langStr);
-		if(matchingColorNamesArray[i].name == currentSelected[lang]){
-			str = spanStr + str;
+						//currentColors[]
+		if(matchingColorNamesArray[i].name == currentColors[side]){
+			//skip current color
 		} else{
 			str += spanStr;
 		}
 		
 	}
-	matchingDiv.innerHTML = str;
-
-	var str = "";
+	
 	for(var i in unMatchingColorNamesArray){
 		var spanStr =  colorNameSpan(
 						unMatchingColorNamesArray[i].name,  
 						langStr);
-		if(unMatchingColorNamesArray[i].name == currentSelected[lang]){
-			str = spanStr + str;
+		if(unMatchingColorNamesArray[i].name == currentColors[side]){
+			//skip current color
 		} else{
 			str += spanStr;
 		}
@@ -442,14 +439,9 @@ function selectColor(lang1, lang2, colorName){
 		  <br>
           <div style="float:left;margin-right:45px">Color: </div><div id="lang1ColorSelector"></div>
 		  <div style="margin-left:130px; margin-top:3px;">Lock Color: <input type="checkbox" id="lock1" /></div>
-		  
           <div id="Lang1Colors">
             <div class="name-list">
-              <b>Matching Colors</b>
-              <div class="matchingColorNames"></div>
-            </div>
-            <div class="name-list">
-              <b>Similar Colors</b>
+              <b>Related Colors</b>
               <div class="similarColorNames"></div>
             </div>
           </div>
@@ -462,14 +454,9 @@ function selectColor(lang1, lang2, colorName){
 		  <br>
           <div style="float:left;margin-right:45px">Color: </div><div id="lang2ColorSelector"></div>
 		  <div style="margin-left:130px; margin-top:3px;">Lock Color: <input type="checkbox" id="lock2" /></div>
-		  <br>
           <div id="Lang2Colors">
             <div class="name-list">
-              <b>Matching Colors</b>
-              <div class="matchingColorNames"></div>
-            </div>
-            <div class="name-list">
-              <b>Similar Colors</b>
+              <b>Related Colors</b>
               <div class="similarColorNames"></div>
             </div>
           </div>
