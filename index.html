@@ -121,9 +121,9 @@ function createSOM(){
 	
 	//TODO: create distance function that incorporates naming
 	//TODO: initialize SOM to all values
-	drawSOMByD3(testsom, "SOM1");
+	drawSOMByD3(testsom, "SOM");
 	// drawSOM(testsom, "SOM1");
-	drawSOM(testsom, "SOM2");
+	// drawSOM(testsom, "SOM2");
 
 }
 
@@ -133,92 +133,48 @@ function drawSOMByD3(testsom, divID){
 			var color = n.weights.map(function(w){ return Math.round(w); });
 			var result = {"color": color};
 			result["colorInfo"] = JSON.parse(JSON.stringify(reverseLookup({r: color[0], g: color[1], b: color[2]})[0]));
-			result["x"]=j;
-			result["y"]=i;
+			result["x"] = j;
+			result["y"] = i;
 			return result;
 		}))
 	},[]);
 
 	var width = 400, 
-			height = 400;
+			height = 400,
+			boxWidth = 20,
+			boxHeight = 20;
 
   var svg = d3.select("#"+divID).append("svg")
       .attr("width", width )
       .attr("height", height )
+      .style("background-color","black")
 
   var somNodes = svg.selectAll(".som-node")
  			.data(data)
  			.enter()
- 				.append("rect")
- 				.attr("class","som-node")
- 				.attr("x", function(d){ return d.x * 20; })
- 				.attr("y", function(d){ return d.y * 20; })
- 				// .attr("rx",1)
- 				// .attr("ry",1)
- 				.attr("width", 20)
- 				.attr("height", 20)
- 				.style("fill", function(d){ return "rgb(" + d.color[0] + "," + d.color[1] + "," + d.color[2] +")"});
+ 				.append("g")
+ 				.attr("class","som-node");
+
+	somNodes.append("rect")
+	 				.attr("x", function(d){ return d.x * boxWidth ; })
+	 				.attr("y", function(d){ return d.y * boxHeight ; })
+	 				// .attr("rx",1)
+	 				// .attr("ry",1)
+	 				.attr("width", boxWidth)
+	 				.attr("height", boxHeight)
+	 				.style("fill", function(d){ return "rgb(" + d.color[0] + "," + d.color[1] + "," + d.color[2] +")"});
+	
+	somNodes.append("text")
+	 				.attr("x", function(d){ return (d.x+0.5) * boxWidth; })
+	 				.attr("y", function(d){ return (d.y+0.75) * boxHeight; })
+	 				.attr("text-anchor", "middle")
+	 				.text("")
+	 				.attr("class",".som-node-text");
+
 
 					 	
 }
 
-
-function drawSOM(testsom, divName){
-	var div = document.getElementById(divName);
-	var str = "";
-	
-	viewedColorNames = {};
-	
-	for(var i = 0; i < testsom.neurons.length; i++){
-		for(var j = 0; j < testsom.neurons[0].length; j++){
-			var color = testsom.neurons[i][j].weights;
-			for(var k = 0; k < color.length; k++){
-				color[k] = Math.round(color[k]);
-			}
-			
-			var temp = reverseLookup({r: color[0], g: color[1], b: color[2]});
-			var colorInfo = temp[0];
-			var rgb_string = temp[1];
-			
-			//for now check if it is the selected color
-			var currentColorCount = 0
-			if(typeof colorInfo !== "undefined" && typeof colorInfo.names[currentLanguage] !== "undefined" 
-				&& typeof colorInfo.names[currentLanguage][currentColor] !== "undefined"){
-				currentColorCount = colorInfo.names[currentLanguage][currentColor];
-			}			
-			
-			str += "<DIV class='" + divName+ "-node som-node'"+
-				"style='background-color:rgb("+
-				color[0]+","+color[1]+","+color[2]+
-				");' " +
-				"colorInfo='" + rgb_string + "' ";
-			// add info on names in languages
-			if(typeof colorInfo !== "undefined"){
-				if(typeof colorInfo.names[currentLanguage] !== "undefined" ){
-					str += "lang" + currentLanguage + "='" +
-							Object.keys(colorInfo.names[currentLanguage]).join(",") +
-							"' ";
-					addViewedColorNames(colorInfo.id, currentLanguage, colorInfo.names[currentLanguage])
-				}
-				if(typeof colorInfo.names[currentOtherLanguage] !== "undefined" ){
-					str += "lang" + currentOtherLanguage + "='" +
-							Object.keys(colorInfo.names[currentOtherLanguage]).join(",") +
-							"' ";
-					addViewedColorNames(colorInfo.id, currentLanguage, colorInfo.names[currentLanguage])
-				}
-			} else {
-				str += "color='color not loaded' ";
-			}
-			
-			str += 	"'>"
-			str += "</DIV>";
-		}
-		str += "<DIV style='clear:both;'></DIV>";
-	}
-
-	div.innerHTML = str;
-	div.style.width = "400px";
-}
 
 function colorNameSpan(name, lang){
 	str = "<span onmouseenter='nameMouseOver(this);' onmouseleave='nameMouseLeave(this);' " +
@@ -231,9 +187,9 @@ function colorNameSpan(name, lang){
 }
 
 function listColorNames(){
-	listColorNamesForLang(currentLanguage);
-	listColorNamesForLang(currentOtherLanguage);
-
+	var lang1ColorName = listColorNamesForLang(currentLanguage);
+	var lang2ColorName = listColorNamesForLang(currentOtherLanguage);
+	highlightColor(lang1ColorName, lang2ColorName);
 }
 
 function listColorNamesForLang(lang){
@@ -278,54 +234,93 @@ function listColorNamesForLang(lang){
 	}
 	similarDiv.innerHTML = str;
 	
+
 	if(matchingColorNamesArray.length > 0){
-		highlightColor(lang, matchingColorNamesArray[0].name);
+		return matchingColorNamesArray[0].name;
 	} else if(unMatchingColorNamesArray.length > 0){
-		highlightColor(lang, unMatchingColorNamesArray[0].name);
+		return unMatchingColorNamesArray[0].name;
 	}
 }
 
-function highlightColor(lang, colorName){
-	var langStr = "current";
-	var divName = "SOM1";
-	if(lang != currentLanguage){
-		langStr = "other";
-		// divName = "SOM2"
-	}
+function highlightColor(lang1ColorName, lang2ColorName){
+	var divName = "SOM";
+	
 	$(".nameSpan").each(function(i){
-		if(this.attributes["lang"].nodeValue == langStr){
-			if(this.attributes.name.nodeValue == colorName){
+		if(this.attributes["lang"].nodeValue == "current"){
+			if(this.attributes.name.nodeValue == lang1ColorName){
 				this.classList.add("mark");
 				this.classList.add("lead");
-			} else {
-				this.classList.remove("mark");
-				this.classList.remove("lead");
-			}
+			} 
 		}
-
+		else if(this.attributes.name.nodeValue == lang2ColorName){
+			this.classList.add("mark");
+			this.classList.add("lead");
+		} 
+		else {
+			this.classList.remove("mark");
+			this.classList.remove("lead");
+		}
 	});
 	
-	$("#" + divName + " .som-node").each(function(i){
-		if(typeof this.attributes["lang" + lang] != "undefined"){
-			var names = this.attributes["lang" + lang].nodeValue.split(",");
-			if(names.includes(colorName)){
-				this.innerHTML = "*";
-			} else {
-				this.innerHTML = "";
+	// $("#" + divName + " .som-node rect").each(function(i){
+	// 	var JQthis = $(this);
+	// 	var lang1Names = this.__data__.colorInfo.names[currentLanguage];
+	// 	var lang2Names = this.__data__.colorInfo.names[currentOtherLanguage];
+	// 	var x = Number(JQthis.attr("x")), 
+	// 			y = Number(JQthis.attr("y"));
+	// 	if(lang1Names && lang1Names.hasOwnProperty(lang1ColorName)){
+	// 		if(lang2Names && lang2Names.hasOwnProperty(lang2ColorName)){
+	// 			JQthis.attr("transform", "");
+	// 		}
+	// 		else{
+	// 			JQthis.attr("transform", "rotate(45," + (x + 5) + "," + (y + 9) + ")");
+	// 		}
+	// 	}
+	// 	else if (lang2Names && lang2Names.hasOwnProperty(lang2ColorName)) {	
+	// 		JQthis.attr("transform", "rotate(-45," + (x + 5) + "," + (y + 9) + ")");
+	// 	}
+	// 	else{
+	// 		JQthis.css("fill","black")	
+	// 	}
+	// });
+
+	$("#" + divName + " .som-node text").each(function(i){
+		var JQthis = $(this);
+		var lang1Names = this.__data__.colorInfo.names[currentLanguage];
+		var lang2Names = this.__data__.colorInfo.names[currentOtherLanguage];
+		
+		if(lang1Names && lang1Names.hasOwnProperty(lang1ColorName)){
+			if(lang2Names && lang2Names.hasOwnProperty(lang2ColorName)){
+				this.innerHTML = "<>";
 			}
-		} else{
-			this.innerHTML = "";
+			else{
+				this.innerHTML = "<&nbsp;";
+			}
 		}
-
-		if(this.__data__.colorInfo.names[lang].hasOwnProperty(colorName)){
-			this.style.strokeWidth = 1;
-			this.style.stroke = 'black';
+		else if (lang2Names && lang2Names.hasOwnProperty(lang2ColorName)) {	
+			this.innerHTML = "&nbsp;>";
 		}
-		else {
-			this.style.stroke = null;
+		else{
 		}
-
 	});
+
+	// $("#" + divName + " .som-node text").each(function(i){
+	// 	var langNames = this.__data__.colorInfo.names[lang];
+	// 	if(langNames && langNames.hasOwnProperty(colorName)){
+	// 		if (this.innerHTML !== "") {
+	// 			this.innerHTML = "<>";	
+	// 		}
+	// 		else if(lang === currentLanguage){
+	// 			this.innerHTML = "<&nbsp;";	
+	// 		}
+	// 		else{
+	// 			this.innerHTML = "&nbsp;>";	
+	// 		}
+	// 	}
+	// 	else if (this.innerHTML === "") {	
+
+	// 	};
+	// });
 	
 }
 
@@ -337,27 +332,15 @@ function nameMouseOver(element){
 	if(element.attributes.lang.nodeValue == "other"){
 		lang = currentOtherLanguage;
 	}
-	
 	currentMouseOver[lang] = element.attributes.name.nodeValue;
 	
 	$(".som-node").each(function(i){
-		if(typeof this.attributes["lang" + lang] != "undefined"){
-			var names = this.attributes["lang" + lang].nodeValue.split(",");
-			if(names.includes(element.attributes.name.nodeValue)){
-				this.style.opacity = 1;
-			} else {
-				this.style.opacity = .75;
-			}
-		} else{
-			this.style.opacity = .75;
-		}
-
-		
-		if(this.__data__.colorInfo.names[lang].hasOwnProperty(currentMouseOver[lang])){
+		var langNames = this.__data__.colorInfo.names[lang];
+		if( langNames && langNames.hasOwnProperty(currentMouseOver[lang])){
 			this.style.opacity = 1;
 		}
 		else {
-			this.style.opacity = .75;
+			this.style.opacity = .25;
 		}
 	});
 }
@@ -466,7 +449,11 @@ function selectColor(lang1, lang2, colorName){
     <div class="container">
   	  <!--#include virtual="../navbar.html" -->
 	  <br><br>
-
+	  	<div class="row align-center">
+	  		
+  			<div id="SOM" class="SOM col-xs-offset-3 col-xs-6 text-center"></div>
+	  		
+      </div>
       <div class="row align-center">
         <div id="language1" class="lang-region col-xs-6">
           <div id="SOM1" class="SOM"></div>
