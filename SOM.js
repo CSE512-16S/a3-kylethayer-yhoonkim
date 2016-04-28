@@ -78,7 +78,7 @@ function som(width, height, dims) {
 		for(var x = xCoords[0]; x <= xCoords[1]; x++){
 			for(var j = 0; j < coordsLength; j++){
 				var y = yCoords[j];
-				if(x >= 0 && x < width && y >= 0 && y < width){
+				if(x >= 0 && x < width && y >= 0 && y < height){
 					neurons.push(this.neurons[x][y]);
 				}
 			}
@@ -88,7 +88,7 @@ function som(width, height, dims) {
 		for(var y = yCoords[0] + 1; y <= yCoords[1] - 1; y++){
 			for(var j = 0; j < coordsLength; j++){
 				var x = xCoords[j];
-				if(x >= 0 && x < width && y >= 0 && y < width){
+				if(x >= 0 && x < width && y >= 0 && y < height){
 					neurons.push(this.neurons[x][y]);
 				}
 			}

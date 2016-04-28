@@ -108,7 +108,7 @@ function colorDropdowns2(colors){
 }
 
 function createSOM(){
-	var testsom = new som(20, 20, 3);
+	var testsom = new som(40, 20, 3);
 	var data = [];
 	for(var i in currentColorIds){
 		var color_id = currentColorIds[i];
@@ -122,8 +122,6 @@ function createSOM(){
 	//TODO: create distance function that incorporates naming
 	//TODO: initialize SOM to all values
 	drawSOMByD3(testsom, "SOM");
-	// drawSOM(testsom, "SOM1");
-	// drawSOM(testsom, "SOM2");
 
 }
 
@@ -133,16 +131,17 @@ function drawSOMByD3(testsom, divID){
 			var color = n.weights.map(function(w){ return Math.round(w); });
 			var result = {"color": color};
 			result["colorInfo"] = JSON.parse(JSON.stringify(reverseLookup({r: color[0], g: color[1], b: color[2]})[0]));
-			result["x"] = j;
-			result["y"] = i;
+			result["x"] = i;
+			result["y"] = j;
 			return result;
 		}))
 	},[]);
 
-	var width = 400, 
-			height = 400,
-			boxWidth = 20,
-			boxHeight = 20;
+	var boxWidth = 20,
+		boxHeight = 20;
+	
+	var width = testsom.neurons.length * boxWidth;
+	var height = testsom.neurons[0].length * boxWidth;
 
   var svg = d3.select("#"+divID).append("svg")
       .attr("width", width )
@@ -451,7 +450,7 @@ function selectColor(lang1, lang2, colorName){
 	  <br><br>
 	  	<div class="row align-center">
 	  		
-  			<div id="SOM" class="SOM col-xs-offset-3 col-xs-6 text-center"></div>
+  			<div id="SOM" class="SOM col-xs-offset-1 col-xs-9 text-center"></div>
 	  		
       </div>
       <div class="row align-center">
