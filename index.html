@@ -60,15 +60,16 @@ function start(){
 			}
 		});
 	});
-	$('.ct-legend.vertical').on('mouseover',function(){ 
+	
+	$('.ct-legend.horizontal').on('mouseover',function(){ 
 		nameMouseOver(currentColors[0],0); 
 	}).on('mouseout',function(){ 
 		nameMouseLeave(currentColors[0],0); 
 	});
-	$('.ct-legend.horizontal').on('mouseover',function(){ 
+	$('.ct-legend.vertical').on('mouseover',function(){ 
 		nameMouseOver(currentColors[1],1); 
 	}).on('mouseout',function(){ 
-		nameMouseLeave(currentColors[0],0); 
+		nameMouseLeave(currentColors[1],1); 
 	});
 }
 
