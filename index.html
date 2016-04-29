@@ -374,19 +374,28 @@ function highlightColor(lang1ColorName, lang2ColorName){
 		var JQthisRect = $('> rect',this);
 		var x = Number(JQthisRect.attr("x")), 
 				y = Number(JQthisRect.attr("y"));
-		var cx = (x + 10), cy = (y + 10);
+		var cx = (x + boxWidth/2), cy = (y + boxHeight/2);
 		var factor = 1;
-		if(!hasColorName(this, lang1ColorName, currentLanguage) == !hasColorName(this, lang2ColorName, currentOtherLanguage)){
-			if(!hasColorName(this, lang2ColorName, currentOtherLanguage)){
-				factor = 0.3;
-				JQthisRect.attr("transform", "translate("+ (-1*cx*(factor-1)) + "," + (-1*cy*(factor-1)) + ")scale("+factor+")");
-			}
-		}
-		else{
-				factor = 0.6;
-				JQthisRect.attr("transform", "translate("+ (-1*cx*(factor-1)) + "," + (-1*cy*(factor-1)) + ")scale("+factor+")");
-			}
 		
+		var xFactor = 0.9;
+		var yFactor = 0.9;
+		
+		if(!hasColorName(this, lang1ColorName, currentLanguage)){
+			xFactor = 0.3;
+			factor = 0.6;
+		}
+		
+		if(!hasColorName(this, lang2ColorName, currentOtherLanguage)){
+			yFactor = 0.3;
+			factor = 0.6;
+		}
+		
+		if(!hasColorName(this, lang1ColorName, currentLanguage) && !hasColorName(this, lang2ColorName, currentOtherLanguage)){
+			factor = 0.3;
+		}
+		
+		JQthisRect.attr("transform", "translate("+ (-1*cx*(xFactor-1)) + "," + (-1*cy*(yFactor-1)) + ")scale("+xFactor+","+yFactor+")");
+		//JQthisRect.attr("transform", "translate("+ (-1*cx*(factor-1)) + "," + (-1*cy*(factor-1)) + ")scale("+factor+","+factor+")");
 	});
 
 	// $("#" + divName + " .som-node text").each(function(i){
@@ -415,15 +424,14 @@ function highlightColor(lang1ColorName, lang2ColorName){
 	// 		var thisNode = JQSomNode[ i * M + j ];
 	// 		var JQNode = $(thisNode);
 			
-	// 		thisNode["hasLang1ColorName"] = hasColorName(thisNode, lang1ColorName, currentLanguage);
-	// 		thisNode["hasLang2ColorName"] = hasColorName(thisNode, lang2ColorName, currentOtherLanguage);
-			
+	// 		thisNode["hasLang1ColorName"] = hasColorName(thisNode, lang1ColorName,  currentLanguages[1]);			
+
 
 	// 		//upper one
 	// 		if (j!==0) {
 	// 			var upper = JQSomNode[i * M + j - 1];
 	// 			// upper["hasLang1ColorName"] = hasColorName(upper, lang1ColorName, currentLanguage);
-	// 			// upper["hasLang2ColorName"] = hasColorName(upper, lang2ColorName, currentOtherLanguage);
+				// upper["hasLang2ColorName"] = hasColorName(upper, lang2ColorName, currentLanguages[1]);
 
 	// 			//xor
 	// 			if (upper.hasLang1ColorName != thisNode.hasLang1ColorName ) {
@@ -437,7 +445,7 @@ function highlightColor(lang1ColorName, lang2ColorName){
 	// 		if (i!==0) {
 	// 			var left = JQSomNode[(i-1) * M + j ];
 	// 			// left["hasLang1ColorName"] = hasColorName(left, lang1ColorName, currentLanguage);
-	// 			// left["hasLang2ColorName"] = hasColorName(left, lang2ColorName, currentOtherLanguage);
+				// left["hasLang2ColorName"] = hasColorName(left, lang2ColorName, currentLanguages[1]);
 
 	// 			//xor
 	// 			if (left.hasLang1ColorName != thisNode.hasLang1ColorName ) {
@@ -457,6 +465,7 @@ function highlightColor(lang1ColorName, lang2ColorName){
 function hasColorName(node, langColorName, which){
 	var langNames = node.__data__.colorInfo.names[which];
 
+	langNames && langNames.hasOwnProperty(name)
 	return !!langNames && langNames.hasOwnProperty(langColorName)
 }
 	
@@ -471,13 +480,12 @@ function nameMouseOver(name, side){
 	
 	$(".som-node").each(function(i){
 
-		var langNames = this.__data__.colorInfo.names[lang];
-		if( langNames && langNames.hasOwnProperty(name)){
+		if(  hasColorName(this, name, lang) ){
 
 			this.style.opacity = 1;
 		}
 		else {
-			this.style.opacity = .0;
+			this.style.opacity = .1;
 		}
 	});
 }
