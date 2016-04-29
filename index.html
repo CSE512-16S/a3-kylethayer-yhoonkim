@@ -27,7 +27,7 @@ currentMouseOver[currentLanguages[1-currentSide]] = "";
 
 currentMouseOver[currentLanguages[1-currentSide]] = "";
 
-var N=40, M=20;
+var N=80, M=40;
 var d3Data =[];
 var svg, somNodes;
 
@@ -55,8 +55,8 @@ function start(){
 
 function loadSOM(){
 	loadColor(function(){
-		createSOM();
 		listColorNames();
+		createSOM();
 	});
 }
 
@@ -142,66 +142,59 @@ function updateSOM(testsom, divID){
 	somNodes = svg.selectAll(".som-node")
  			.data(d3Data);
  	
- 	somNodes.enter()
+ 	var somNodesEnter = somNodes.enter()
  				.append("g")
  				.attr("class","som-node");
 
-	somNodes.append("rect")
-	 				.attr("x", function(d){ return d.x * boxWidth ; })
+	somNodesEnter.append("rect");
+
+	somNodes.select("rect")
+		 			.attr("x", function(d){ return d.x * boxWidth ; })
 	 				.attr("y", function(d){ return d.y * boxHeight ; })
 	 				// .attr("rx",1)
 	 				// .attr("ry",1)
-	 				.attr("width", boxWidth)
-	 				.attr("height", boxHeight)
+	 				.attr("width", boxWidth + .5)
+	 				.attr("height", boxHeight + .5)
 	 				.style("fill", function(d){ return "rgb(" + d.color[0] + "," + d.color[1] + "," + d.color[2] +")"});
+
+	//horizontal midline
+	somNodesEnter.append("line")
+				.attr("class","horizontal-line")
+				.attr("stroke","black")
+				.attr("stroke-width",".5")
+					
+	somNodes.select(".horizontal-line")
+				.attr("x1", function(d){ return (d.x) * boxWidth ; })
+				.attr("y1", function(d){ return (d.y + 0.5) * boxHeight - 1 ; })
+				.attr("x2", function(d){ return (d.x + 1) * boxWidth; })
+				.attr("y2", function(d){ return (d.y  + 0.5) * boxHeight -1; })
+				.attr("stroke-opacity", function(d){ 
+					if(hasColorName(d, currentColors[0], currentLanguages[0])) 
+						return 1;
+					return 0;
+					});
+				
+	//vertical midline
+	somNodesEnter.append("line")
+				.attr("class","vertical-line")
+				.attr("stroke","black")
+				.attr("stroke-width",".5")
+
+					
+	somNodes.select(".vertical-line")
+				.attr("x1", function(d){ return (d.x + 0.5) * boxWidth ; })
+				.attr("y1", function(d){ return (d.y) * boxHeight - 1 ; })
+				.attr("x2", function(d){ return (d.x + 0.5) * boxWidth; })
+				.attr("y2", function(d){ return (d.y + 1) * boxHeight -1; })
+				.attr("stroke-opacity", function(d){ 
+					if(hasColorName(d, currentColors[1], currentLanguages[1])) 
+						return 1;
+					return 0;
+					});
+					
 	
-	somNodes.append("text")
-	 				.attr("x", function(d){ return (d.x+0.5) * boxWidth; })
-	 				.attr("y", function(d){ return (d.y+0.75) * boxHeight; })
-	 				.attr("text-anchor", "middle")
-	 				.attr("class",".som-node-text")
-	 				.append("text").text("");
-
-	somNodes.append("line")
-	 				.attr("x1", function(d){ return d.x * boxWidth ; })
-	 				.attr("y1", function(d){ return (d.y) * boxHeight - 1 ; })
-	 				.attr("x2", function(d){ return (d.x + 1) * boxWidth; })
-	 				.attr("y2", function(d){ return (d.y) * boxHeight -1; })
-	 				.attr("class","outer top")
-	 				.attr("stroke","white")
-	 				.attr("stroke-width","2")
-	 				.attr("stroke-opacity",0)
- 	somNodes.append("line")
-	 				.attr("x1", function(d){ return (d.x) * boxWidth - 1; })
-	 				.attr("y1", function(d){ return (d.y) * boxHeight; })
-	 				.attr("x2", function(d){ return (d.x) * boxWidth - 1; })
-	 				.attr("y2", function(d){ return (d.y + 1) * boxHeight; })
-	 				.attr("class","outer left")
-	 				.attr("stroke","white")
-	 				.attr("stroke-width","2")
-	 				.attr("stroke-opacity",0)
-
-	somNodes.append("line")
-	 				.attr("x1", function(d){ return d.x * boxWidth ; })
-	 				.attr("y1", function(d){ return (d.y) * boxHeight + 1 ; })
-	 				.attr("x2", function(d){ return (d.x + 1) * boxWidth; })
-	 				.attr("y2", function(d){ return (d.y) * boxHeight + 1; })
-	 				.attr("class","inner top")
-	 				.attr("stroke","white")
-	 				.attr("stroke-dasharray","2,2")
-	 				.attr("stroke-width","2")
-	 				.attr("stroke-opacity",0)
-
- 	somNodes.append("line")
-	 				.attr("x1", function(d){ return (d.x) * boxWidth + 1; })
-	 				.attr("y1", function(d){ return (d.y) * boxHeight; })
-	 				.attr("x2", function(d){ return (d.x) * boxWidth + 1; })
-	 				.attr("y2", function(d){ return (d.y + 1) * boxHeight; })
-	 				.attr("class","inner left")
-	 				.attr("stroke","white")
-	 				.attr("stroke-dasharray","2,2")
-	 				.attr("stroke-width","2")
-	 				.attr("stroke-opacity",0)
+					
+	somNodes.exit().remove();
 
 
 
@@ -213,7 +206,6 @@ function drawSOMByD3(n, m, divID){
   svg = d3.select("#"+divID).append("svg")
       .attr("width", somWidth )
       .attr("height", somHeight )
-      .style("background-color","black")
 }
 
 
@@ -233,7 +225,7 @@ function listColorNames(){
 	
 	selectDropdownColorName(currentColors[0], 0);
 	selectDropdownColorName(currentColors[1], 1);
-	highlightColor(currentColors[0], currentColors[1]);
+	//highlightColor(currentColors[0], currentColors[1]);
 }
 
 function selectDropdownColorName(name, side){
@@ -299,113 +291,11 @@ function listColorNamesForLang(side){
 
 }
 
-function highlightColor(lang1ColorName, lang2ColorName){
-	var divName = "SOM";
-	
-	// $("#" + divName + " .som-node rect").each(function(i){
-	// 	var JQthis = $(this);
-	// 	var lang1Names = this.__data__.colorInfo.names[currentLanguages[0]];
-	// 	var lang2Names = this.__data__.colorInfo.names[currentLanguages[1]];
-	// 	var x = Number(JQthis.attr("x")), 
-	// 			y = Number(JQthis.attr("y"));
-	// 	if(lang1Names && lang1Names.hasOwnProperty(lang1ColorName)){
-	// 		if(lang2Names && lang2Names.hasOwnProperty(lang2ColorName)){
-	// 			JQthis.attr("transform", "");
-	// 		}
-	// 		else{
-	// 			JQthis.attr("transform", "rotate(45," + (x + 5) + "," + (y + 9) + ")");
-	// 		}
-	// 	}
-	// 	else if (lang2Names && lang2Names.hasOwnProperty(lang2ColorName)) {	
-	// 		JQthis.attr("transform", "rotate(-45," + (x + 5) + "," + (y + 9) + ")");
-	// 	}
-	// 	else{
-	// 		JQthis.css("fill","black")	
-	// 	}
-	// });
 
-	// $("#" + divName + " .som-node text").each(function(i){
-	// 	var JQthis = $(this);
-	// 	var lang1Names = this.__data__.colorInfo.names[currentLanguage];
-	// 	var lang2Names = this.__data__.colorInfo.names[currentLanguages[1]];
-		
-	// 	if(lang1Names && lang1Names.hasOwnProperty(lang1ColorName)){
-	// 		if(lang2Names && lang2Names.hasOwnProperty(lang2ColorName)){
-	// 			this.innerHTML = "<>";
-	// 		}
-	// 		else if(lang === currentLanguages[0]){
-	// 			this.innerHTML = "<&nbsp;";
-	// 		}
-	// 	}
-	// 	else if (lang2Names && lang2Names.hasOwnProperty(lang2ColorName)) {	
-	// 		this.innerHTML = "&nbsp;>";
-	// 	}
-	// 	else{
-	// 	}
-	// });
+function hasColorName(node, langColorName, which){
+	var langNames = node.colorInfo.names[which];
 
-	var JQSomNode = $("#" + divName + " .som-node");
-	for (var i = 0; i < N; i++) {
-		for (var j = 0; j < M; j++) {
-			var thisNode = JQSomNode[ i * M + j ];
-			var JQNode = $(thisNode);
-			
-			thisNode["hasLang1ColorName"] = hasColorName(thisNode, lang1ColorName, currentLanguage);
-			thisNode["hasLang2ColorName"] = hasColorName(thisNode, lang2ColorName, currentLanguages[1]);
-			
-
-			//upper one
-			if (j!==0) {
-				var upper = JQSomNode[i * M + j - 1];
-				
-				//xor
-				if (upper.hasLang1ColorName != thisNode.hasLang1ColorName ) {
-					$('> .outer.top', thisNode).attr("stroke-opacity",1);
-				}
-				else{
-				  $('> .outer.top', thisNode).attr("stroke-opacity",0);	
-				}
-				if (upper.hasLang2ColorName != thisNode.hasLang2ColorName ) {
-					$('> .inner.top', thisNode).attr("stroke-opacity",1);
-				}
-				else{
-				  $('> .inner.top', thisNode).attr("stroke-opacity",0);	
-				}
-			}
-			//left one
-			if (i!==0) {
-				var left = JQSomNode[(i-1) * M + j ];
-				
-				//xor
-				if (left.hasLang1ColorName != thisNode.hasLang1ColorName ) {
-					$('> .outer.left', thisNode).attr("stroke-opacity",1);
-				}
-				else{
-				  $('> .outer.left', thisNode).attr("stroke-opacity",0);	
-				}
-				if (left.hasLang2ColorName != thisNode.hasLang2ColorName ) {
-					$('> .inner.left', thisNode).attr("stroke-opacity",1);
-				}
-				else{
-				  $('> .inner.left', thisNode).attr("stroke-opacity",0);	
-				}
-			}
-						
-		};
-	};
-
-	function hasColorName(node, langColorName, which){
-		var langNames = node.__data__.colorInfo.names[which];
-
-		return !!langNames && langNames.hasOwnProperty(langColorName)
-	}
-	
-		
-
-		
-
-
-	
+	return !!langNames && langNames.hasOwnProperty(langColorName)
 }
 
 
