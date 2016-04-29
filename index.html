@@ -264,7 +264,7 @@ function listColorNamesForLang(side){
 		bestMatch = unMatchingColorNamesArray[0].name;
 	}
 	
-	if(side != currentSide){
+	if(side != currentSide &&  !$("#lock" + (1 + side)).is(':checked')){
 		currentColors[side] = bestMatch;
 	}
 
