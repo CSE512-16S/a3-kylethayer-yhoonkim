@@ -5,6 +5,7 @@
 
 <script src="js/jquery-1.12.0.min.js"></script>
 <script src="js/d3.min.js"></script>
+<script src="js/colorspaces.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="SOM.js"></script>
 <script src="color-utils.js"></script>
@@ -136,6 +137,8 @@ function updateSOM(testsom, divID){
 			result["colorInfo"] = JSON.parse(JSON.stringify(reverseLookup(rgbColor)[0]));
 			result["x"] = i;
 			result["y"] = j;
+			result["lab"] = $.colorspaces.make_color('sRGB', [result.color[0]/256, result.color[1]/256, result.color[2]/256]).as("CIELAB");
+      
 			return result;
 		}))
 	},[]);
@@ -161,7 +164,13 @@ function updateSOM(testsom, divID){
 	//horizontal midline
 	somNodesEnter.append("line")
 				.attr("class","horizontal-line")
-				.attr("stroke","black")
+				.attr("stroke",function(d){
+					var value = 0;
+					// var value = Math.round(256-d.lab[0]*256/100) > 128 ? 255 : 0;
+					// var value = Math.round(256-(d.color[0] + d.color[1] + d.color[2])/3);
+      		return 'rgb('+value+','+value+','+value+')';
+     			// return 'cielab(' + d.lab[0] +',0,0)'
+				})
 				.attr("stroke-width",".5")
 					
 	somNodes.select(".horizontal-line")
@@ -178,8 +187,14 @@ function updateSOM(testsom, divID){
 	//vertical midline
 	somNodesEnter.append("line")
 				.attr("class","vertical-line")
-				.attr("stroke","black")
-				.attr("stroke-width",".5")
+				.attr("stroke",function(d){
+					var value = 0;
+					// var value = Math.round(256-d.lab[0]*256/100) > 128 ? 255 : 0;
+      		return 'rgb('+value+','+value+','+value+')';
+     			// return 'cielab(' + d.lab[0] +',0,0)'
+
+				})
+				.attr("stroke-width",".5")	
 
 					
 	somNodes.select(".vertical-line")
@@ -226,6 +241,8 @@ function listColorNames(){
 	
 	selectDropdownColorName(currentColors[0], 0);
 	selectDropdownColorName(currentColors[1], 1);
+	$('#legend-horizontal').html(currentColors[0]);
+	$('#legend-vertical').html(currentColors[1]);
 	//highlightColor(currentColors[0], currentColors[1]);
 }
 
@@ -392,46 +409,47 @@ function selectColor(colorName, side){
 </head>
 
 <body onload = "start()">
-    <div class="container">
+  <div class="container">
   	  <!--#include virtual="../navbar.html" -->
-	 <H1 style="text-align: center;">Color Translator</H1>
-	  	<div class="row align-center">
-  			<div id="SOM" class="SOM col-xs-offset-1 col-xs-9 text-center"></div>
-      </div>
-      <div class="row align-center">
-        <div id="language1" class="lang-region col-xs-6">
-          <div id="SOM1" class="SOM"></div>
-		  <br>
-		  <div style="float:left;margin-right:15px">Language: </div><div id="lang1Dropdown"></div>
-		  <br>
-          <div style="float:left;margin-right:45px">Color: </div><div id="lang1ColorSelector"></div>
-		  <div style="margin-left:130px; margin-top:3px;">Lock Color: <input type="checkbox" id="lock1" /></div>
-          <div id="Lang1Colors">
-            <div class="name-list">
-              <b>Related Colors</b>
-              <div class="similarColorNames"></div>
-            </div>
+ 		<H1 style="text-align: center;">Color Translator</H1>
+ 		<h4 class="text-center">
+ 			<span class="ct-legend"><img src="legend_h.png" width="20px"></img><span id="legend-horizontal"></span></span>
+ 			<span class="ct-legend"><img src="legend_v.png" width="20px"></img><span id="legend-vertical"></span></span>
+ 		</h4>
+  	<div class="row align-center">
+			<div id="SOM" class="SOM col-xs-offset-1 col-xs-9 text-center"></div>
+    </div>
+    <div class="row align-center">
+      <div id="language1" class="lang-region col-xs-6">
+        <br>
+	  		<div style="float:left;margin-right:15px">Language: </div><div id="lang1Dropdown"></div>
+	  		<br>
+      	<div style="float:left;margin-right:45px">Color: </div><div id="lang1ColorSelector"></div>
+	  		<div style="margin-left:130px; margin-top:3px;">Lock Color: <input type="checkbox" id="lock1" /></div>
+        <div id="Lang1Colors">
+          <div class="name-list">
+            <b>Related Colors</b>
+            <div class="similarColorNames"></div>
           </div>
         </div>
+      </div>
 
-        <div id="language2" class="lang-region col-xs-6">
-          <div id="SOM2" class="SOM"></div>
-		  <br>
-		  <div style="float:left;margin-right:15px">Language: </div><div id="lang2Dropdown"></div>
-		  <br>
+      <div id="language2" class="lang-region col-xs-6">
+			  <br>
+			  <div style="float:left;margin-right:15px">Language: </div><div id="lang2Dropdown"></div>
+			  <br>
           <div style="float:left;margin-right:45px">Color: </div><div id="lang2ColorSelector"></div>
-		  <div style="margin-left:130px; margin-top:3px;">Lock Color: <input type="checkbox" id="lock2" /></div>
-          <div id="Lang2Colors">
-            <div class="name-list">
-              <b>Related Colors</b>
-              <div class="similarColorNames"></div>
+			  <div style="margin-left:130px; margin-top:3px;">Lock Color: <input type="checkbox" id="lock2" /></div>
+        <div id="Lang2Colors">
+          <div class="name-list">
+            <b>Related Colors</b>
+            <div class="similarColorNames"></div>
             </div>
           </div>
         </div>
       </div>
 
     </div>
-
-</div>
+	</div>
 </body>
 </html>
