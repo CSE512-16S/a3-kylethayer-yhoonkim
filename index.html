@@ -84,7 +84,8 @@ function singleLanguageDropdown(languages, side){ //side is 0 for left, 1 for ri
 }
 
 function drawColorDropdowns(colors, side){//side is 0 for left, 1 for right
-	var str = "<select class='form-control' onchange='selectColorDropdown(this);' style='width:50%' col='"+(side+1)+"'>";
+	var str = "<select class='form-control' onchange='selectColorDropdown(this);' style='width:50%' col='"+(side+1)+"' "+
+		" onmouseenter='nameMouseOver(this.value, \""+side+"\");' onmouseleave='nameMouseLeave(this.value, \""+side+"\");'>";
 	if(currentColors[side] == ""){
 		//TODO: correctly populate currentColor
 		currentColors[side] = colors[0]["color_name"];
@@ -215,7 +216,7 @@ function drawSOMByD3(n, m, divID){
 
 
 function colorNameSpan(name, lang){
-	str = "<span onmouseenter='nameMouseOver(this);' onmouseleave='nameMouseLeave(this);' " +
+	str = "<span onmouseenter='nameMouseOver(\""+name+"\", \""+lang+"\");' onmouseleave='nameMouseLeave(\""+name+"\", \""+lang+"\");' " +
 				"onclick='nameMouseClick(this);' " + 
 				"class = 'nameSpan' " +
 				"name='"+name+"' lang='"+lang+"'>" + 
@@ -400,16 +401,16 @@ function highlightColor(lang1ColorName, lang2ColorName){
 
 
 
-function nameMouseOver(element){
-	var lang = currentLanguage;
-	if(element.attributes.lang.nodeValue == "1"){
+function nameMouseOver(name, side){
+	var lang = currentLanguages[0];
+	if(side == "1"){
 		lang = currentLanguages[1];
 	}
-	currentMouseOver[lang] = element.attributes.name.nodeValue;
+	currentMouseOver[lang] = side;
 	
 	$(".som-node").each(function(i){
 		var langNames = this.__data__.colorInfo.names[lang];
-		if( langNames && langNames.hasOwnProperty(currentMouseOver[lang])){
+		if( langNames && langNames.hasOwnProperty(name)){
 			this.style.opacity = 1;
 		}
 		else {
@@ -418,13 +419,13 @@ function nameMouseOver(element){
 	});
 }
 
-function nameMouseLeave(element){
-	var lang = currentLanguage;
-	if(element.attributes.lang.nodeValue == "1"){
+function nameMouseLeave(name, side){
+	var lang = currentLanguages[0];
+	if(side == "1"){
 		lang = currentLanguages[1];
 	}
 	
-	if(currentMouseOver[lang] == element.attributes.name.nodeValue){
+	if(currentMouseOver[lang] == side){
 	
 		$(".som-node").each(function(i){
 			this.style.opacity = 1;
