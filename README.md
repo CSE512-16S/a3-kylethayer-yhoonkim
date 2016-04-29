@@ -6,12 +6,18 @@ Assignment3
 1. Kyle Thayer
 2. Younghoon Kim
 
-
 ## Color Translater
 
 ![Thumbnail](thumbnail.png)
 
-(Put your a brief description of your final interactive visualization application and your dataset here.)
+Color Translater presents the translation of colornames in different language through color map. 
+Through the cycle of translating, we'd like users you to explore the color-colorname-language space!
+
+We collected the dataset from the Amazon Mechanical Turk during CSE510 course project. The dataset is composed of columns like the below.
+
+- color code in R,G,B
+- colorname 
+- language
 
 
 ## Running Instructions
@@ -75,7 +81,14 @@ We choose the dropdown boxes for interaction methodes because the types of "lang
 
 ### Changes between Storyboard and the Final Implementation
 
-A paragraph explaining changes between the storyboard and the final implementation.
+In the storyboard, we attempted to present the regions by drawing their border but it seemed not slient as we want. So we tried this in several ways and pick the final version as you see. The other our approaches are the below. 
+
+<img src="storyboard/map_1.jpg" width="480">
+<img src="storyboard/map_2.jpg" width="480">
+<img src="storyboard/map_3.jpg" widtht="480">
+
+
+(A paragraph explaining changes between the storyboard and the final implementation.)
 
 
 ## Development Process
