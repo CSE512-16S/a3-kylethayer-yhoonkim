@@ -49,16 +49,13 @@ function start(){
 			loadSOM();
 		});
 		draw(sorted_color_names_by_lang_name(currentLanguages[1-currentSide]), function(data){drawColorDropdowns(data, 1)});
-		//drawColorDropdowns();
-
 	});
 }
 
 function loadSOM(){
-	loadColor(function(){
-		listColorNames();
-		createSOM();
-	});
+	prepareColor();
+	listColorNames();
+	createSOM();
 }
 
 function languageDropdowns(languages){
@@ -225,12 +222,12 @@ function drawSOMByD3(n, m, divID){
 
 
 function colorNameSpan(name, lang){
-	str = "<span onmouseenter='nameMouseOver(\""+name+"\", \""+lang+"\");' onmouseleave='nameMouseLeave(\""+name+"\", \""+lang+"\");' " +
+	str = " <span onmouseenter='nameMouseOver(\""+name+"\", \""+lang+"\");' onmouseleave='nameMouseLeave(\""+name+"\", \""+lang+"\");' " +
 				"onclick='nameMouseClick(this);' " + 
 				"class = 'nameSpan' " +
 				"name='"+name+"' lang='"+lang+"'>" + 
-					name + "," +  
-				"</span> ";
+					name + "," +
+				"</span>";
 	return str;
 }
 
@@ -257,10 +254,6 @@ function selectDropdownColorName(name, side){
 
 function listColorNamesForLang(side){
     var lang = currentLanguages[side]
-	//var langStr = "current";
-	//if(lang != currentLanguages[currentSide]){
-	//	langStr = "other";
-	//}
 	langStr = side;
 	
 	var similarDiv = document.getElementById("Lang"+(side+1)+"Colors").getElementsByClassName("similarColorNames")[0];
@@ -275,12 +268,15 @@ function listColorNamesForLang(side){
 		bestMatch = unMatchingColorNamesArray[0].name;
 	}
 	
+	var allColors = matchingColorNamesArray.concat(unMatchingColorNamesArray);
+	allColors = allColors.slice(0, 40);
+	
 	if(side != currentSide &&  !$("#lock" + (1 + side)).is(':checked')){
 		currentColors[side] = bestMatch;
 	}
 
-	var str = "";
-	for(var i in matchingColorNamesArray){
+	var spanStrings = [];
+	for(var i in allColors){
 		var spanStr =  colorNameSpan(
 						matchingColorNamesArray[i].name,  
 						langStr);
@@ -288,23 +284,11 @@ function listColorNamesForLang(side){
 		if(matchingColorNamesArray[i].name == currentColors[side]){
 			//skip current color
 		} else{
-			str += spanStr;
+			spanStrings.push(spanStr);
 		}
 		
 	}
-	
-	for(var i in unMatchingColorNamesArray){
-		var spanStr =  colorNameSpan(
-						unMatchingColorNamesArray[i].name,  
-						langStr);
-		if(unMatchingColorNamesArray[i].name == currentColors[side]){
-			//skip current color
-		} else{
-			str += spanStr;
-		}
-		
-	}
-	similarDiv.innerHTML = str;
+	similarDiv.innerHTML = spanStrings.join(" ");
 
 }
 
