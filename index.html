@@ -27,7 +27,7 @@ currentMouseOver[currentLanguages[1-currentSide]] = "";
 
 currentMouseOver[currentLanguages[1-currentSide]] = "";
 
-var N=40, M=20;
+var N=80, M=40;
 var d3Data =[];
 var svg, somNodes;
 
@@ -369,7 +369,7 @@ function highlightColor(lang1ColorName, lang2ColorName){
 	// 		JQthis.css("fill","black")	
 	// 	}
 	// });
-
+	d3.selectAll('rect.duplicated').remove();
 	$("#" + divName + " .som-node").each(function(i){
 		var JQthisRect = $('> rect',this);
 		var x = Number(JQthisRect.attr("x")), 
@@ -377,8 +377,22 @@ function highlightColor(lang1ColorName, lang2ColorName){
 		var cx = (x + boxWidth/2), cy = (y + boxHeight/2);
 		var factor = 1;
 		
-		var xFactor = 0.9;
-		var yFactor = 0.9;
+		var xFactor = 1;
+		var yFactor = 1;
+		if (hasColorName(this, lang1ColorName, currentLanguage) && hasColorName(this, lang2ColorName, currentOtherLanguage)) {
+			yFactor = 0.3;
+			d3.select(this)
+				.append('rect')
+				.attr("x",x)
+				.attr("y",y)
+				.style("fill", function(d){ return "rgb(" + d.color[0] + "," + d.color[1] + "," + d.color[2] +")"})
+				.attr("height",boxHeight)
+				.attr("width",boxWidth)
+				.attr("class", "duplicated")
+				.attr("transform", "translate("+ (-1*cx*(xFactor-1)) + "," + (-1*cy*(yFactor-1)) + ")scale("+xFactor+","+yFactor+")");
+			yFactor = 1;
+			xFactor = 0.3
+		};
 		
 		if(!hasColorName(this, lang1ColorName, currentLanguage)){
 			xFactor = 0.3;
