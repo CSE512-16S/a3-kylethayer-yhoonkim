@@ -27,7 +27,7 @@ currentMouseOver[currentLanguages[1-currentSide]] = "";
 
 currentMouseOver[currentLanguages[1-currentSide]] = "";
 
-var N=40, M=20;
+var N=80, M=40;
 var d3Data =[];
 var svg, somNodes;
 
@@ -188,7 +188,7 @@ function updateSOM(testsom, divID){
 	 				.attr("y2", function(d){ return (d.y) * boxHeight + 1; })
 	 				.attr("class","inner top")
 	 				.attr("stroke","white")
-	 				.attr("stroke-dasharray","2,2")
+	 				.attr("stroke-dasharray","1,1")
 	 				.attr("stroke-width","2")
 	 				.attr("stroke-opacity",0)
 
@@ -199,7 +199,7 @@ function updateSOM(testsom, divID){
 	 				.attr("y2", function(d){ return (d.y + 1) * boxHeight; })
 	 				.attr("class","inner left")
 	 				.attr("stroke","white")
-	 				.attr("stroke-dasharray","2,2")
+	 				.attr("stroke-dasharray","1,1")
 	 				.attr("stroke-width","2")
 	 				.attr("stroke-opacity",0)
 
