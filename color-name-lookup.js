@@ -82,7 +82,7 @@ function loadColor(callbackFunction){
 	for (var colorId in colorValues) {
 		if(typeof colorValues[colorId].names[currentLanguages[currentSide]] !== "undefined"){
 			var thisColorNames = Object.keys(colorValues[colorId].names[currentLanguages[currentSide]]);
-			if(thisColorNames.includes(currentColor)){
+			if(thisColorNames.includes(currentColors[currentSide])){
 				currentColorIds.push(colorId);
 			}
 		}
@@ -93,8 +93,8 @@ function loadColor(callbackFunction){
 
 function findMatchingColors(callbackFunction){
 	
-	var matchingSameColorNamesArray = getColorNames(currentLanguages[currentSide], currentColor, currentLanguages[currentSide])[0];
-	var matchingOtherColorNamesArray = getColorNames(currentLanguages[1-currentSide], currentColor, currentLanguages[currentSide])[0];
+	var matchingSameColorNamesArray = getColorNames(currentLanguages[currentSide], currentColors[currentSide], currentLanguages[currentSide])[0];
+	var matchingOtherColorNamesArray = getColorNames(currentLanguages[1-currentSide], currentColors[currentSide], currentLanguages[currentSide])[0];
 	
 	//optional code to chose top 50 color names for each
 	var numMatchingColors = 50;

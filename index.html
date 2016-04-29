@@ -92,7 +92,7 @@ function drawColorDropdowns(colors, side){//side is 0 for left, 1 for right
 	}
 	colors.forEach(function(color) {
 		str += "<option value = '"+color["color_name"]+"' ";
-		if(color["color_name"] == currentColor){
+		if(color["color_name"] == currentColors[currentSide]){
 			str += " selected = true ";
 		}
 		str += ">" + color["color_name"] + "</option>";
@@ -232,13 +232,14 @@ function listColorNames(){
 
 function listColorNamesForLang(side){
     var lang = currentLanguages[side]
-	var langStr = "current";
-	if(lang != currentLanguages[currentSide]){
-		langStr = "other";
-	}
+	//var langStr = "current";
+	//if(lang != currentLanguages[currentSide]){
+	//	langStr = "other";
+	//}
+	langStr = side;
 	
 	var similarDiv = document.getElementById("Lang"+(side+1)+"Colors").getElementsByClassName("similarColorNames")[0];
-	var ret = getColorNames(lang, currentColor, currentLanguages[currentSide]);
+	var ret = getColorNames(lang, currentColors[currentSide], currentLanguages[currentSide]);
 	var matchingColorNamesArray = ret[0];
 	var unMatchingColorNamesArray = ret[1];
 
@@ -383,7 +384,7 @@ function highlightColor(lang1ColorName, lang2ColorName){
 
 function nameMouseOver(element){
 	var lang = currentLanguage;
-	if(element.attributes.lang.nodeValue == "other"){
+	if(element.attributes.lang.nodeValue == "1"){
 		lang = currentLanguages[1];
 	}
 	currentMouseOver[lang] = element.attributes.name.nodeValue;
@@ -401,7 +402,7 @@ function nameMouseOver(element){
 
 function nameMouseLeave(element){
 	var lang = currentLanguage;
-	if(element.attributes.lang.nodeValue == "other"){
+	if(element.attributes.lang.nodeValue == "1"){
 		lang = currentLanguages[1];
 	}
 	
@@ -418,7 +419,7 @@ function nameMouseClick(element){
     var side = 0;
 	var divName = "SOM1";
 	var lang = currentLanguage;
-	if(element.attributes.lang.nodeValue == "other"){
+	if(element.attributes.lang.nodeValue == "1"){
 		side = 1;
 		divName = "SOM2";
 		lang = currentLanguages[1];
