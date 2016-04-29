@@ -3,6 +3,7 @@ var colorValues = {};
 var rgbLookup = {};
 var currentColorIds = [];
 var viewedColorNames = {};
+var colorsLoaded = [];
 
 function draw(query, func) {
 	$.get(query, function(data) {
@@ -41,38 +42,52 @@ function addColorName(id, langId, name){
 }
 
 function loadAllColors(callbackFunction){
-	colorValues = {}
-	$.ajax({
-		url: connString + "/answers?",
-		data: {
-			select: "color_name,color{color_id,r,g,b},assignments{assignment_id,languages{language_id,language}}", 
-			"assignments.languages.language": "in." + currentLanguages[currentSide] + "," + currentLanguages[1-currentSide]
-		},
-		success: function(data) {
-			for (var i = 0; i < data.length; i++) {
-				
-				if(data[i].color === null || data[i].assignments.languages === null){
-					continue;
+	
+	var colorsToLoad = [];
+	if(!colorsLoaded.includes(currentLanguages[currentSide])){
+		colorsToLoad.push(currentLanguages[currentSide]);
+		colorsLoaded.push(currentLanguages[currentSide]);
+	}
+	if(!colorsLoaded.includes(currentLanguages[1-currentSide])){
+		colorsToLoad.push(currentLanguages[1-currentSide]);
+		colorsLoaded.push(currentLanguages[1-currentSide]);
+	}
+
+	if(colorsToLoad.length > 0){
+		$.ajax({
+			url: connString + "/answers?",
+			data: {
+				select: "color_name,color{color_id,r,g,b},assignments{assignment_id,languages{language_id,language}}", 
+				"assignments.languages.language": "in." + colorsToLoad.join()
+			},
+			success: function(data) {
+				for (var i = 0; i < data.length; i++) {
+					
+					if(data[i].color === null || data[i].assignments.languages === null){
+						continue;
+					}
+					var color_id = data[i].color.color_id;
+					
+					//add if needed
+					addCurrentColorValue(
+							color_id, 
+							data[i].color.r, 
+							data[i].color.g,
+							data[i].color.b);
+					
+					langId = data[i].assignments.languages.language
+					addColorName(
+						color_id,
+						langId,
+						data[i].color_name);
 				}
-				var color_id = data[i].color.color_id;
-				
-				//add if needed
-				addCurrentColorValue(
-						color_id, 
-						data[i].color.r, 
-						data[i].color.g,
-						data[i].color.b);
-				
-				langId = data[i].assignments.languages.language
-				addColorName(
-					color_id,
-					langId,
-					data[i].color_name);
+				callbackFunction();
 			}
-			callbackFunction();
-		}
-		
-	});
+			
+		});
+	} else{
+		callbackFunction();
+	}
 }
 
 function loadColor(callbackFunction){
