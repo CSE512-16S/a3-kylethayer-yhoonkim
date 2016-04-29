@@ -187,7 +187,8 @@ function updateSOM(testsom, divID){
 	 				.attr("x2", function(d){ return (d.x + 1) * boxWidth; })
 	 				.attr("y2", function(d){ return (d.y) * boxHeight + 1; })
 	 				.attr("class","inner top")
-	 				.attr("stroke","red")
+	 				.attr("stroke","white")
+	 				.attr("stroke-dasharray","2,2")
 	 				.attr("stroke-width","2")
 	 				.attr("stroke-opacity",0)
 
@@ -197,7 +198,8 @@ function updateSOM(testsom, divID){
 	 				.attr("x2", function(d){ return (d.x) * boxWidth + 1; })
 	 				.attr("y2", function(d){ return (d.y + 1) * boxHeight; })
 	 				.attr("class","inner left")
-	 				.attr("stroke","red")
+	 				.attr("stroke","white")
+	 				.attr("stroke-dasharray","2,2")
 	 				.attr("stroke-width","2")
 	 				.attr("stroke-opacity",0)
 
@@ -355,30 +357,38 @@ function highlightColor(lang1ColorName, lang2ColorName){
 			//upper one
 			if (j!==0) {
 				var upper = JQSomNode[i * M + j - 1];
-				// upper["hasLang1ColorName"] = hasColorName(upper, lang1ColorName, currentLanguage);
-				// upper["hasLang2ColorName"] = hasColorName(upper, lang2ColorName, currentLanguages[1]);
-
+				
 				//xor
 				if (upper.hasLang1ColorName != thisNode.hasLang1ColorName ) {
 					$('> .outer.top', thisNode).attr("stroke-opacity",1);
 				}
+				else{
+				  $('> .outer.top', thisNode).attr("stroke-opacity",0);	
+				}
 				if (upper.hasLang2ColorName != thisNode.hasLang2ColorName ) {
 					$('> .inner.top', thisNode).attr("stroke-opacity",1);
-				};
+				}
+				else{
+				  $('> .inner.top', thisNode).attr("stroke-opacity",0);	
+				}
 			}
 			//left one
 			if (i!==0) {
 				var left = JQSomNode[(i-1) * M + j ];
-				// left["hasLang1ColorName"] = hasColorName(left, lang1ColorName, currentLanguage);
-				// left["hasLang2ColorName"] = hasColorName(left, lang2ColorName, currentLanguages[1]);
-
+				
 				//xor
 				if (left.hasLang1ColorName != thisNode.hasLang1ColorName ) {
 					$('> .outer.left', thisNode).attr("stroke-opacity",1);
 				}
+				else{
+				  $('> .outer.left', thisNode).attr("stroke-opacity",0);	
+				}
 				if (left.hasLang2ColorName != thisNode.hasLang2ColorName ) {
 					$('> .inner.left', thisNode).attr("stroke-opacity",1);
-				};
+				}
+				else{
+				  $('> .inner.left', thisNode).attr("stroke-opacity",0);	
+				}
 			}
 						
 		};
