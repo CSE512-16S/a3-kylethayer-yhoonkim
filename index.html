@@ -372,19 +372,28 @@ function highlightColor(lang1ColorName, lang2ColorName){
 		var JQthisRect = $('> rect',this);
 		var x = Number(JQthisRect.attr("x")), 
 				y = Number(JQthisRect.attr("y"));
-		var cx = (x + 10), cy = (y + 10);
+		var cx = (x + boxWidth/2), cy = (y + boxHeight/2);
 		var factor = 1;
-		if(!hasColorName(this, lang1ColorName, currentLanguage) == !hasColorName(this, lang2ColorName, currentOtherLanguage)){
-			if(!hasColorName(this, lang2ColorName, currentOtherLanguage)){
-				factor = 0.3;
-				JQthisRect.attr("transform", "translate("+ (-1*cx*(factor-1)) + "," + (-1*cy*(factor-1)) + ")scale("+factor+")");
-			}
-		}
-		else{
-				factor = 0.6;
-				JQthisRect.attr("transform", "translate("+ (-1*cx*(factor-1)) + "," + (-1*cy*(factor-1)) + ")scale("+factor+")");
-			}
 		
+		var xFactor = 0.9;
+		var yFactor = 0.9;
+		
+		if(!hasColorName(this, lang1ColorName, currentLanguage)){
+			xFactor = 0.3;
+			factor = 0.6;
+		}
+		
+		if(!hasColorName(this, lang2ColorName, currentOtherLanguage)){
+			yFactor = 0.3;
+			factor = 0.6;
+		}
+		
+		if(!hasColorName(this, lang1ColorName, currentLanguage) && !hasColorName(this, lang2ColorName, currentOtherLanguage)){
+			factor = 0.3;
+		}
+		
+		JQthisRect.attr("transform", "translate("+ (-1*cx*(xFactor-1)) + "," + (-1*cy*(yFactor-1)) + ")scale("+xFactor+","+yFactor+")");
+		//JQthisRect.attr("transform", "translate("+ (-1*cx*(factor-1)) + "," + (-1*cy*(factor-1)) + ")scale("+factor+","+factor+")");
 	});
 
 	// $("#" + divName + " .som-node text").each(function(i){
