@@ -4,7 +4,7 @@ svg{
 
 .nameSpan {
   white-space: nowrap;
-  margin-right: 2px;
+  margin-left: 2px;
 }
 
 .nameSpan:hover { 
