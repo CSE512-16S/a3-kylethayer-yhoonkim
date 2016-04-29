@@ -27,8 +27,19 @@ currentMouseOver[currentOtherLanguage] = "";
 
 currentMouseOver[currentOtherLanguage] = "";
 
+var N=40, M=20;
+var d3Data =[];
+var svg, somNodes;
+
+var somWidth = 800;
+var boxWidth = somWidth / N;
+var boxHeight = boxWidth;
+var somHeight = M * boxWidth;
+
+
 function start(){
 	$('#nav-translator').addClass('active');
+	
 	draw(num_answers_by_lang, languageDropdowns);
 
 	loadAllColors(function(){
@@ -92,7 +103,7 @@ function drawColorDropdowns(colors, side){//side is 0 for left, 1 for right
 }
 
 function createSOM(){
-	var testsom = new som(40, 20, 3);
+	var testsom = new som(N, M, 3);
 	var data = [];
 	for(var i in currentColorIds){
 		var color_id = currentColorIds[i];
@@ -105,12 +116,18 @@ function createSOM(){
 	
 	//TODO: create distance function that incorporates naming
 	//TODO: initialize SOM to all values
-	drawSOMByD3(testsom, "SOM");
+	if(!svg){
+		drawSOMByD3(N, M, "SOM");
+	}
+	updateSOM(testsom, "SOM");
 
 }
 
-function drawSOMByD3(testsom, divID){
-	var data = testsom.neurons.reduce(function(prev, neuron, i){
+function updateSOM(testsom, divID){
+
+
+
+	var d3Data = testsom.neurons.reduce(function(prev, neuron, i){
 		return prev.concat(neuron.map(function(n,j){
 			var color = n.weights.map(function(w){ return Math.round(w); });
 			var result = {"color": color};
@@ -121,19 +138,10 @@ function drawSOMByD3(testsom, divID){
 		}))
 	},[]);
 
-	var width = 800;
-	var boxWidth = width / testsom.neurons.length;
-	var boxHeight = boxWidth;
-	var height = testsom.neurons[0].length * boxWidth;
-
-  var svg = d3.select("#"+divID).append("svg")
-      .attr("width", width )
-      .attr("height", height )
-      .style("background-color","black")
-
-  var somNodes = svg.selectAll(".som-node")
- 			.data(data)
- 			.enter()
+	somNodes = svg.selectAll(".som-node")
+ 			.data(d3Data);
+ 	
+ 	somNodes.enter()
  				.append("g")
  				.attr("class","som-node");
 
@@ -150,11 +158,59 @@ function drawSOMByD3(testsom, divID){
 	 				.attr("x", function(d){ return (d.x+0.5) * boxWidth; })
 	 				.attr("y", function(d){ return (d.y+0.75) * boxHeight; })
 	 				.attr("text-anchor", "middle")
-	 				.text("")
-	 				.attr("class",".som-node-text");
+	 				.attr("class",".som-node-text")
+	 				.append("text").text("");
+
+	somNodes.append("line")
+	 				.attr("x1", function(d){ return d.x * boxWidth ; })
+	 				.attr("y1", function(d){ return (d.y) * boxHeight - 1 ; })
+	 				.attr("x2", function(d){ return (d.x + 1) * boxWidth; })
+	 				.attr("y2", function(d){ return (d.y) * boxHeight -1; })
+	 				.attr("class","outer top")
+	 				.attr("stroke","white")
+	 				.attr("stroke-width","2")
+	 				.attr("stroke-opacity",0)
+ 	somNodes.append("line")
+	 				.attr("x1", function(d){ return (d.x) * boxWidth - 1; })
+	 				.attr("y1", function(d){ return (d.y) * boxHeight; })
+	 				.attr("x2", function(d){ return (d.x) * boxWidth - 1; })
+	 				.attr("y2", function(d){ return (d.y + 1) * boxHeight; })
+	 				.attr("class","outer left")
+	 				.attr("stroke","white")
+	 				.attr("stroke-width","2")
+	 				.attr("stroke-opacity",0)
+
+	somNodes.append("line")
+	 				.attr("x1", function(d){ return d.x * boxWidth ; })
+	 				.attr("y1", function(d){ return (d.y) * boxHeight + 1 ; })
+	 				.attr("x2", function(d){ return (d.x + 1) * boxWidth; })
+	 				.attr("y2", function(d){ return (d.y) * boxHeight + 1; })
+	 				.attr("class","inner top")
+	 				.attr("stroke","red")
+	 				.attr("stroke-width","2")
+	 				.attr("stroke-opacity",0)
+
+ 	somNodes.append("line")
+	 				.attr("x1", function(d){ return (d.x) * boxWidth + 1; })
+	 				.attr("y1", function(d){ return (d.y) * boxHeight; })
+	 				.attr("x2", function(d){ return (d.x) * boxWidth + 1; })
+	 				.attr("y2", function(d){ return (d.y + 1) * boxHeight; })
+	 				.attr("class","inner left")
+	 				.attr("stroke","red")
+	 				.attr("stroke-width","2")
+	 				.attr("stroke-opacity",0)
 
 
-					 	
+
+}
+
+
+
+function drawSOMByD3(n, m, divID){
+  svg = d3.select("#"+divID).append("svg")
+      .attr("width", somWidth )
+      .attr("height", somHeight )
+      .style("background-color","black")
 }
 
 
@@ -246,43 +302,79 @@ function highlightColor(lang1ColorName, lang2ColorName){
 	// 	}
 	// });
 
-	$("#" + divName + " .som-node text").each(function(i){
-		var JQthis = $(this);
-		var lang1Names = this.__data__.colorInfo.names[currentLanguages[0]];
-		var lang2Names = this.__data__.colorInfo.names[currentOtherLanguage];
-		
-		if(lang1Names && lang1Names.hasOwnProperty(lang1ColorName)){
-			if(lang2Names && lang2Names.hasOwnProperty(lang2ColorName)){
-				this.innerHTML = "<>";
-			}
-			else{
-				this.innerHTML = "<&nbsp;";
-			}
-		}
-		else if (lang2Names && lang2Names.hasOwnProperty(lang2ColorName)) {	
-			this.innerHTML = "&nbsp;>";
-		}
-		else{
-		}
-	});
-
 	// $("#" + divName + " .som-node text").each(function(i){
-	// 	var langNames = this.__data__.colorInfo.names[lang];
-	// 	if(langNames && langNames.hasOwnProperty(colorName)){
-	// 		if (this.innerHTML !== "") {
-	// 			this.innerHTML = "<>";	
+	// 	var JQthis = $(this);
+	// 	var lang1Names = this.__data__.colorInfo.names[currentLanguage];
+	// 	var lang2Names = this.__data__.colorInfo.names[currentOtherLanguage];
+		
+	// 	if(lang1Names && lang1Names.hasOwnProperty(lang1ColorName)){
+	// 		if(lang2Names && lang2Names.hasOwnProperty(lang2ColorName)){
+	// 			this.innerHTML = "<>";
 	// 		}
 	// 		else if(lang === currentLanguages[0]){
-	// 			this.innerHTML = "<&nbsp;";	
-	// 		}
-	// 		else{
-	// 			this.innerHTML = "&nbsp;>";	
+	// 			this.innerHTML = "<&nbsp;";
 	// 		}
 	// 	}
-	// 	else if (this.innerHTML === "") {	
-
-	// 	};
+	// 	else if (lang2Names && lang2Names.hasOwnProperty(lang2ColorName)) {	
+	// 		this.innerHTML = "&nbsp;>";
+	// 	}
+	// 	else{
+	// 	}
 	// });
+
+	var JQSomNode = $("#" + divName + " .som-node");
+	for (var i = 0; i < N; i++) {
+		for (var j = 0; j < M; j++) {
+			var thisNode = JQSomNode[ i * M + j ];
+			var JQNode = $(thisNode);
+			
+			thisNode["hasLang1ColorName"] = hasColorName(thisNode, lang1ColorName, currentLanguage);
+			thisNode["hasLang2ColorName"] = hasColorName(thisNode, lang2ColorName, currentOtherLanguage);
+			
+
+			//upper one
+			if (j!==0) {
+				var upper = JQSomNode[i * M + j - 1];
+				// upper["hasLang1ColorName"] = hasColorName(upper, lang1ColorName, currentLanguage);
+				// upper["hasLang2ColorName"] = hasColorName(upper, lang2ColorName, currentOtherLanguage);
+
+				//xor
+				if (upper.hasLang1ColorName != thisNode.hasLang1ColorName ) {
+					$('> .outer.top', thisNode).attr("stroke-opacity",1);
+				}
+				if (upper.hasLang2ColorName != thisNode.hasLang2ColorName ) {
+					$('> .inner.top', thisNode).attr("stroke-opacity",1);
+				};
+			}
+			//left one
+			if (i!==0) {
+				var left = JQSomNode[(i-1) * M + j ];
+				// left["hasLang1ColorName"] = hasColorName(left, lang1ColorName, currentLanguage);
+				// left["hasLang2ColorName"] = hasColorName(left, lang2ColorName, currentOtherLanguage);
+
+				//xor
+				if (left.hasLang1ColorName != thisNode.hasLang1ColorName ) {
+					$('> .outer.left', thisNode).attr("stroke-opacity",1);
+				}
+				if (left.hasLang2ColorName != thisNode.hasLang2ColorName ) {
+					$('> .inner.left', thisNode).attr("stroke-opacity",1);
+				};
+			}
+						
+		};
+	};
+
+	function hasColorName(node, langColorName, which){
+		var langNames = node.__data__.colorInfo.names[which];
+
+		return !!langNames && langNames.hasOwnProperty(langColorName)
+	}
+	
+		
+
+		
+
+
 	
 }
 
