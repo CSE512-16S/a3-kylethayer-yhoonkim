@@ -63,9 +63,29 @@ function start(){
 }
 
 function loadSOM(){
+	updateBestMatch();
 	prepareColor();
 	listColorNames();
 	createSOM();
+}
+
+function updateBestMatch(){
+    var lang = currentLanguages[1-currentSide]
+
+	var ret = getColorNames(currentLanguages[1-currentSide], currentColors[currentSide], currentLanguages[currentSide]);
+	var matchingColorNamesArray = ret[0];
+	var unMatchingColorNamesArray = ret[1];
+	
+	var bestMatch;
+	if(matchingColorNamesArray.length > 0){
+		bestMatch = matchingColorNamesArray[0].name;
+	} else if(unMatchingColorNamesArray.length > 0){
+		bestMatch = unMatchingColorNamesArray[0].name;
+	}
+
+	if(!$("#lock" + (1 + 1 - currentSide)).is(':checked')){
+		currentColors[1 - currentSide] = bestMatch;
+	}
 }
 
 function languageDropdowns(languages){
@@ -253,7 +273,6 @@ function listColorNames(){
 	selectDropdownColorName(currentColors[1], 1);
 	$('#legend-horizontal').html(currentColors[0]);
 	$('#legend-vertical').html(currentColors[1]);
-	//highlightColor(currentColors[0], currentColors[1]);
 }
 
 function selectDropdownColorName(name, side){
@@ -275,20 +294,9 @@ function listColorNamesForLang(side){
 	var matchingColorNamesArray = ret[0];
 	var unMatchingColorNamesArray = ret[1];
 	
-	var bestMatch;
-	if(matchingColorNamesArray.length > 0){
-		bestMatch = matchingColorNamesArray[0].name;
-	} else if(unMatchingColorNamesArray.length > 0){
-		bestMatch = unMatchingColorNamesArray[0].name;
-	}
-	
 	var allColors = matchingColorNamesArray.concat(unMatchingColorNamesArray);
 	if(allColors.length > 40){
 		allColors = allColors.slice(0, 40);
-	}
-	
-	if(side != currentSide &&  !$("#lock" + (1 + side)).is(':checked')){
-		currentColors[side] = bestMatch;
 	}
 
 	var spanStrings = [];
