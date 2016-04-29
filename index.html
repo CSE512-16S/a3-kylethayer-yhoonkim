@@ -18,14 +18,14 @@ var currentLanguage = "english";
 var currentOtherLanguage = "spanish";
 var currentColors = ["", ""];
 var currentColor = "";
+var currentSide = 0;
 
 var currentMouseOver = {};
-currentMouseOver[currentLanguage] = "";
-currentMouseOver[currentOtherLanguage] = "";
+currentMouseOver[currentLanguages[currentSide]] = "";
+currentMouseOver[currentLanguages[1-currentSide]] = "";
 
-var currentSelected = {};
-currentSelected[currentLanguage] = "";
-currentMouseOver[currentOtherLanguage] = "";
+
+currentMouseOver[currentLanguages[1-currentSide]] = "";
 
 var N=40, M=20;
 var d3Data =[];
@@ -43,11 +43,11 @@ function start(){
 	draw(num_answers_by_lang, languageDropdowns);
 
 	loadAllColors(function(){
-		draw(sorted_color_names_by_lang_name(currentLanguage), function(data){
+		draw(sorted_color_names_by_lang_name(currentLanguages[currentSide]), function(data){
 			drawColorDropdowns(data, 0)
 			loadSOM();
 		});
-		draw(sorted_color_names_by_lang_name(currentOtherLanguage), function(data){drawColorDropdowns(data, 1)});
+		draw(sorted_color_names_by_lang_name(currentLanguages[1-currentSide]), function(data){drawColorDropdowns(data, 1)});
 		//drawColorDropdowns();
 
 	});
@@ -70,7 +70,7 @@ function singleLanguageDropdown(languages, side){ //side is 0 for left, 1 for ri
 		return b.num_answers - a.num_answers;
 	});
 	
-	var str = "<select class='form-control' onchange='selectLang(this);' style='width:50%' col="+(side+1)+">";
+	var str = "<select class='form-control' onchange='selectLang(this);' style='width:50%' col='"+(side+1)+"'>";
 	languages.forEach(function(lang) {
 		str += "<option value = '"+lang["language"] +"' ";
 		if(lang["language"] == currentLanguages[side]){
@@ -84,7 +84,8 @@ function singleLanguageDropdown(languages, side){ //side is 0 for left, 1 for ri
 }
 
 function drawColorDropdowns(colors, side){//side is 0 for left, 1 for right
-	var str = "<select class='form-control' onchange='selectColorDropdown(this);' style='width:50%' col='1'>";
+	var str = "<select class='form-control' onchange='selectColorDropdown(this);' style='width:50%' col='"+(side+1)+"' "+
+		" onmouseenter='nameMouseOver(this.value, \""+side+"\");' onmouseleave='nameMouseLeave(this.value, \""+side+"\");'>";
 	if(currentColors[side] == ""){
 		//TODO: correctly populate currentColor
 		currentColors[side] = colors[0]["color_name"];
@@ -92,7 +93,7 @@ function drawColorDropdowns(colors, side){//side is 0 for left, 1 for right
 	}
 	colors.forEach(function(color) {
 		str += "<option value = '"+color["color_name"]+"' ";
-		if(color["color_name"] == currentColor){
+		if(color["color_name"] == currentColors[currentSide]){
 			str += " selected = true ";
 		}
 		str += ">" + color["color_name"] + "</option>";
@@ -186,7 +187,8 @@ function updateSOM(testsom, divID){
 	 				.attr("x2", function(d){ return (d.x + 1) * boxWidth; })
 	 				.attr("y2", function(d){ return (d.y) * boxHeight + 1; })
 	 				.attr("class","inner top")
-	 				.attr("stroke","red")
+	 				.attr("stroke","white")
+	 				.attr("stroke-dasharray","2,2")
 	 				.attr("stroke-width","2")
 	 				.attr("stroke-opacity",0)
 
@@ -196,7 +198,8 @@ function updateSOM(testsom, divID){
 	 				.attr("x2", function(d){ return (d.x) * boxWidth + 1; })
 	 				.attr("y2", function(d){ return (d.y + 1) * boxHeight; })
 	 				.attr("class","inner left")
-	 				.attr("stroke","red")
+	 				.attr("stroke","white")
+	 				.attr("stroke-dasharray","2,2")
 	 				.attr("stroke-width","2")
 	 				.attr("stroke-opacity",0)
 
@@ -261,8 +264,8 @@ function drawSOMByD3(n, m, divID){
 
 
 function colorNameSpan(name, lang){
-	str = "<span onmouseenter='nameMouseOver(this);' onmouseleave='nameMouseLeave(this);' " +
-				"onclick='nameMouseClick(this);' ondblclick='nameMouseDblClick(this);' " + 
+	str = "<span onmouseenter='nameMouseOver(\""+name+"\", \""+lang+"\");' onmouseleave='nameMouseLeave(\""+name+"\", \""+lang+"\");' " +
+				"onclick='nameMouseClick(this);' " + 
 				"class = 'nameSpan' " +
 				"name='"+name+"' lang='"+lang+"'>" + 
 					name + "," +  
@@ -271,22 +274,47 @@ function colorNameSpan(name, lang){
 }
 
 function listColorNames(){
-	var lang1ColorName = listColorNamesForLang(0);
-	var lang2ColorName = listColorNamesForLang(1);
-	highlightColor(lang1ColorName, lang2ColorName);
+	listColorNamesForLang(0);
+	listColorNamesForLang(1);
+	
+	selectDropdownColorName(currentColors[0], 0);
+	selectDropdownColorName(currentColors[1], 1);
+	highlightColor(currentColors[0], currentColors[1]);
+}
+
+function selectDropdownColorName(name, side){
+	$("#lang"+(side+1)+"ColorSelector select option").each(function(){
+		if(this.value == name){
+			this.selected = true;
+		}else{
+			this.selected = false;
+		}
+	});
 }
 
 function listColorNamesForLang(side){
     var lang = currentLanguages[side]
-	var langStr = "current";
-	if(lang != currentLanguage){
-		langStr = "other";
-	}
+	//var langStr = "current";
+	//if(lang != currentLanguages[currentSide]){
+	//	langStr = "other";
+	//}
+	langStr = side;
 	
 	var similarDiv = document.getElementById("Lang"+(side+1)+"Colors").getElementsByClassName("similarColorNames")[0];
-	var ret = getColorNames(lang, currentColor, currentLanguage);
+	var ret = getColorNames(lang, currentColors[currentSide], currentLanguages[currentSide]);
 	var matchingColorNamesArray = ret[0];
 	var unMatchingColorNamesArray = ret[1];
+	
+	var bestMatch;
+	if(matchingColorNamesArray.length > 0){
+		bestMatch = matchingColorNamesArray[0].name;
+	} else if(unMatchingColorNamesArray.length > 0){
+		bestMatch = unMatchingColorNamesArray[0].name;
+	}
+	
+	if(side != currentSide &&  !$("#lock" + (1 + side)).is(':checked')){
+		currentColors[side] = bestMatch;
+	}
 
 	var str = "";
 	for(var i in matchingColorNamesArray){
@@ -314,13 +342,7 @@ function listColorNamesForLang(side){
 		
 	}
 	similarDiv.innerHTML = str;
-	
 
-	if(matchingColorNamesArray.length > 0){
-		return matchingColorNamesArray[0].name;
-	} else if(unMatchingColorNamesArray.length > 0){
-		return unMatchingColorNamesArray[0].name;
-	}
 }
 
 function highlightColor(lang1ColorName, lang2ColorName){
@@ -328,8 +350,8 @@ function highlightColor(lang1ColorName, lang2ColorName){
 	
 	// $("#" + divName + " .som-node rect").each(function(i){
 	// 	var JQthis = $(this);
-	// 	var lang1Names = this.__data__.colorInfo.names[currentLanguage];
-	// 	var lang2Names = this.__data__.colorInfo.names[currentOtherLanguage];
+	// 	var lang1Names = this.__data__.colorInfo.names[currentLanguages[0]];
+	// 	var lang2Names = this.__data__.colorInfo.names[currentLanguages[1]];
 	// 	var x = Number(JQthis.attr("x")), 
 	// 			y = Number(JQthis.attr("y"));
 	// 	if(lang1Names && lang1Names.hasOwnProperty(lang1ColorName)){
@@ -370,13 +392,13 @@ function highlightColor(lang1ColorName, lang2ColorName){
 	// $("#" + divName + " .som-node text").each(function(i){
 	// 	var JQthis = $(this);
 	// 	var lang1Names = this.__data__.colorInfo.names[currentLanguage];
-	// 	var lang2Names = this.__data__.colorInfo.names[currentOtherLanguage];
+	// 	var lang2Names = this.__data__.colorInfo.names[currentLanguages[1]];
 		
 	// 	if(lang1Names && lang1Names.hasOwnProperty(lang1ColorName)){
 	// 		if(lang2Names && lang2Names.hasOwnProperty(lang2ColorName)){
 	// 			this.innerHTML = "<>";
 	// 		}
-	// 		else{
+	// 		else if(lang === currentLanguages[0]){
 	// 			this.innerHTML = "<&nbsp;";
 	// 		}
 	// 	}
@@ -440,15 +462,18 @@ function hasColorName(node, langColorName, which){
 	
 
 
-function nameMouseOver(element){
-	var lang = currentLanguage;
-	if(element.attributes.lang.nodeValue == "other"){
-		lang = currentOtherLanguage;
+function nameMouseOver(name, side){
+	var lang = currentLanguages[0];
+	if(side == "1"){
+		lang = currentLanguages[1];
 	}
-	currentMouseOver[lang] = element.attributes.name.nodeValue;
+	currentMouseOver[lang] = side;
 	
 	$(".som-node").each(function(i){
-		if(  hasColorName(this, currentMouseOver[lang], lang) ){
+
+		var langNames = this.__data__.colorInfo.names[lang];
+		if( langNames && langNames.hasOwnProperty(name)){
+
 			this.style.opacity = 1;
 		}
 		else {
@@ -457,13 +482,13 @@ function nameMouseOver(element){
 	});
 }
 
-function nameMouseLeave(element){
-	var lang = currentLanguage;
-	if(element.attributes.lang.nodeValue == "other"){
-		lang = currentOtherLanguage;
+function nameMouseLeave(name, side){
+	var lang = currentLanguages[0];
+	if(side == "1"){
+		lang = currentLanguages[1];
 	}
 	
-	if(currentMouseOver[lang] == element.attributes.name.nodeValue){
+	if(currentMouseOver[lang] == side){
 	
 		$(".som-node").each(function(i){
 			this.style.opacity = 1;
@@ -472,24 +497,26 @@ function nameMouseLeave(element){
 }
 
 
-function nameMouseDblClick(element){
+function nameMouseClick(element){
+    var side = 0;
 	var divName = "SOM1";
 	var lang = currentLanguage;
-	if(element.attributes.lang.nodeValue == "other"){
+	if(element.attributes.lang.nodeValue == "1"){
+		side = 1;
 		divName = "SOM2";
-		lang = currentOtherLanguage;
+		lang = currentLanguages[1];
 	}
 	
 	var lang1 = currentLanguage;
-	var lang2 = currentOtherLanguage;
-	if (lang == currentOtherLanguage) {
-		lang1 = currentOtherLanguage;
+	var lang2 = currentLanguages[1];
+	if (lang == currentLanguages[1]) {
+		lang1 = currentLanguages[1];
 		lang2 = currentLanguage;
 	}
 	
 	var colorName = element.attributes.name.nodeValue;
 	
-	selectColor(lang1, lang2, colorName)
+	selectColor(colorName, side);
 }
 
 
@@ -498,49 +525,40 @@ function selectLang(element){
 		currentLanguage = element.value;
 		currentColor = ""; //if the left column is changed, we need to clear the current color name
 	} else {
-		currentOtherLanguage = element.value;
+		currentLanguages[1] = element.value;
 	}
-	
-	currentSelected[currentLanguage] = "";
-	currentSelected[currentOtherLanguage] = "";
 
 	loadAllColors(function(){
-		draw(sorted_color_names_by_lang_name(currentLanguage), function(data){
+		draw(sorted_color_names_by_lang_name(currentLanguages[currentSide]), function(data){
 			drawColorDropdowns(data, 0)
 			loadSOM();
 		});
-		draw(sorted_color_names_by_lang_name(currentOtherLanguage), function(data){drawColorDropdowns(data, 1);});
+		draw(sorted_color_names_by_lang_name(currentLanguages[1-currentSide]), function(data){drawColorDropdowns(data, 1);});
 	});
 }
 
 function selectColorDropdown(element){
+    var side = 0;
 	var lang1 = currentLanguage;
-	var lang2 = currentOtherLanguage; 
+	var lang2 = currentLanguages[1]; 
 	if(element.attributes.col.nodeValue == 2){
-		lang1 = currentOtherLanguage;
+		lang1 = currentLanguages[1];
 		lang2 = currentLanguage;
+		side = 1;
 	}
 	var colorName =  element.value
-	
-	selectColor(lang1, lang2, colorName)
+
+	selectColor(colorName, side);
 }
 
-function selectColor(lang1, lang2, colorName){
-	currentLanguage = lang1;
-	currentOtherLanguage = lang2;
+function selectColor(colorName, side){
+	currentColors[side] = colorName;
+	currentSide = side;
 	
-	currentColor = colorName;
-	
-	currentMouseOver[currentLanguage] = "";
-	currentMouseOver[currentOtherLanguage] = "";
-
-	currentSelected[currentLanguage] = currentColor;
-	currentSelected[currentOtherLanguage] = "";
-
-	draw(num_answers_by_lang, languageDropdowns);
-	draw(sorted_color_names_by_lang_name(currentLanguage), function(data){drawColorDropdowns(data, 0);});
-	draw(sorted_color_names_by_lang_name(currentOtherLanguage), function(data){drawColorDropdowns(data, 1);});
+	//currentMouseOver[currentLanguage] = "";
+	//currentMouseOver[currentOtherLanguage] = "";
 	loadSOM();
+	
 }
 
 </script>
