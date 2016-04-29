@@ -22,10 +22,10 @@ var currentSide = 0;
 
 var currentMouseOver = {};
 currentMouseOver[currentLanguages[currentSide]] = "";
-currentMouseOver[currentOtherLanguage] = "";
+currentMouseOver[currentLanguages[1-currentSide]] = "";
 
 
-currentMouseOver[currentOtherLanguage] = "";
+currentMouseOver[currentLanguages[1-currentSide]] = "";
 
 var N=40, M=20;
 var d3Data =[];
@@ -47,7 +47,7 @@ function start(){
 			drawColorDropdowns(data, 0)
 			loadSOM();
 		});
-		draw(sorted_color_names_by_lang_name(currentOtherLanguage), function(data){drawColorDropdowns(data, 1)});
+		draw(sorted_color_names_by_lang_name(currentLanguages[1-currentSide]), function(data){drawColorDropdowns(data, 1)});
 		//drawColorDropdowns();
 
 	});
@@ -283,7 +283,7 @@ function highlightColor(lang1ColorName, lang2ColorName){
 	// $("#" + divName + " .som-node rect").each(function(i){
 	// 	var JQthis = $(this);
 	// 	var lang1Names = this.__data__.colorInfo.names[currentLanguages[0]];
-	// 	var lang2Names = this.__data__.colorInfo.names[currentOtherLanguage];
+	// 	var lang2Names = this.__data__.colorInfo.names[currentLanguages[1]];
 	// 	var x = Number(JQthis.attr("x")), 
 	// 			y = Number(JQthis.attr("y"));
 	// 	if(lang1Names && lang1Names.hasOwnProperty(lang1ColorName)){
@@ -305,7 +305,7 @@ function highlightColor(lang1ColorName, lang2ColorName){
 	// $("#" + divName + " .som-node text").each(function(i){
 	// 	var JQthis = $(this);
 	// 	var lang1Names = this.__data__.colorInfo.names[currentLanguage];
-	// 	var lang2Names = this.__data__.colorInfo.names[currentOtherLanguage];
+	// 	var lang2Names = this.__data__.colorInfo.names[currentLanguages[1]];
 		
 	// 	if(lang1Names && lang1Names.hasOwnProperty(lang1ColorName)){
 	// 		if(lang2Names && lang2Names.hasOwnProperty(lang2ColorName)){
@@ -329,14 +329,14 @@ function highlightColor(lang1ColorName, lang2ColorName){
 			var JQNode = $(thisNode);
 			
 			thisNode["hasLang1ColorName"] = hasColorName(thisNode, lang1ColorName, currentLanguage);
-			thisNode["hasLang2ColorName"] = hasColorName(thisNode, lang2ColorName, currentOtherLanguage);
+			thisNode["hasLang2ColorName"] = hasColorName(thisNode, lang2ColorName, currentLanguages[1]);
 			
 
 			//upper one
 			if (j!==0) {
 				var upper = JQSomNode[i * M + j - 1];
 				// upper["hasLang1ColorName"] = hasColorName(upper, lang1ColorName, currentLanguage);
-				// upper["hasLang2ColorName"] = hasColorName(upper, lang2ColorName, currentOtherLanguage);
+				// upper["hasLang2ColorName"] = hasColorName(upper, lang2ColorName, currentLanguages[1]);
 
 				//xor
 				if (upper.hasLang1ColorName != thisNode.hasLang1ColorName ) {
@@ -350,7 +350,7 @@ function highlightColor(lang1ColorName, lang2ColorName){
 			if (i!==0) {
 				var left = JQSomNode[(i-1) * M + j ];
 				// left["hasLang1ColorName"] = hasColorName(left, lang1ColorName, currentLanguage);
-				// left["hasLang2ColorName"] = hasColorName(left, lang2ColorName, currentOtherLanguage);
+				// left["hasLang2ColorName"] = hasColorName(left, lang2ColorName, currentLanguages[1]);
 
 				//xor
 				if (left.hasLang1ColorName != thisNode.hasLang1ColorName ) {
@@ -384,7 +384,7 @@ function highlightColor(lang1ColorName, lang2ColorName){
 function nameMouseOver(element){
 	var lang = currentLanguage;
 	if(element.attributes.lang.nodeValue == "other"){
-		lang = currentOtherLanguage;
+		lang = currentLanguages[1];
 	}
 	currentMouseOver[lang] = element.attributes.name.nodeValue;
 	
@@ -402,7 +402,7 @@ function nameMouseOver(element){
 function nameMouseLeave(element){
 	var lang = currentLanguage;
 	if(element.attributes.lang.nodeValue == "other"){
-		lang = currentOtherLanguage;
+		lang = currentLanguages[1];
 	}
 	
 	if(currentMouseOver[lang] == element.attributes.name.nodeValue){
@@ -421,13 +421,13 @@ function nameMouseClick(element){
 	if(element.attributes.lang.nodeValue == "other"){
 		side = 1;
 		divName = "SOM2";
-		lang = currentOtherLanguage;
+		lang = currentLanguages[1];
 	}
 	
 	var lang1 = currentLanguage;
-	var lang2 = currentOtherLanguage;
-	if (lang == currentOtherLanguage) {
-		lang1 = currentOtherLanguage;
+	var lang2 = currentLanguages[1];
+	if (lang == currentLanguages[1]) {
+		lang1 = currentLanguages[1];
 		lang2 = currentLanguage;
 	}
 	
@@ -443,7 +443,7 @@ function selectLang(element){
 		currentLanguage = element.value;
 		currentColor = ""; //if the left column is changed, we need to clear the current color name
 	} else {
-		currentOtherLanguage = element.value;
+		currentLanguages[1] = element.value;
 	}
 
 	loadAllColors(function(){
@@ -451,16 +451,16 @@ function selectLang(element){
 			drawColorDropdowns(data, 0)
 			loadSOM();
 		});
-		draw(sorted_color_names_by_lang_name(currentOtherLanguage), function(data){drawColorDropdowns(data, 1);});
+		draw(sorted_color_names_by_lang_name(currentLanguages[1-currentSide]), function(data){drawColorDropdowns(data, 1);});
 	});
 }
 
 function selectColorDropdown(element){
     var side = 0;
 	var lang1 = currentLanguage;
-	var lang2 = currentOtherLanguage; 
+	var lang2 = currentLanguages[1]; 
 	if(element.attributes.col.nodeValue == 2){
-		lang1 = currentOtherLanguage;
+		lang1 = currentLanguages[1];
 		lang2 = currentLanguage;
 		side = 1;
 	}
