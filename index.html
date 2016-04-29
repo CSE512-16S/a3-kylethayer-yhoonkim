@@ -60,6 +60,16 @@ function start(){
 			}
 		});
 	});
+	$('.ct-legend.vertical').on('mouseover',function(){ 
+		nameMouseOver(currentColors[0],0); 
+	}).on('mouseout',function(){ 
+		nameMouseLeave(currentColors[0],0); 
+	});
+	$('.ct-legend.horizontal').on('mouseover',function(){ 
+		nameMouseOver(currentColors[1],1); 
+	}).on('mouseout',function(){ 
+		nameMouseLeave(currentColors[0],0); 
+	});
 }
 
 function loadSOM(){
@@ -333,9 +343,8 @@ function nameMouseOver(name, side){
 	}
 	currentMouseOver[lang] = side;
 	
-	$(".som-node").each(function(i){
-		var langNames = this.__data__.colorInfo.names[lang];
-		if( langNames && langNames.hasOwnProperty(name)){
+	$(".som-node ").each(function(i){
+		if( hasColorName(this.__data__, name, lang)){
 			this.style.opacity = 1;
 		}
 		else {
@@ -351,8 +360,7 @@ function nameMouseLeave(name, side){
 	}
 	
 	if(currentMouseOver[lang] == side){
-	
-		$(".som-node").each(function(i){
+		$(".som-node ").each(function(i){
 			this.style.opacity = 1;
 		});
 	}
@@ -441,8 +449,8 @@ function selectColor(colorName, side){
   	  <!--#include virtual="../navbar.html" -->
  		<H1 style="text-align: center;">Color Translator</H1>
  		<h4 class="text-center">
- 			<span class="ct-legend"><img src="legend_h.png" width="20px"></img><span id="legend-horizontal"></span></span>
- 			<span class="ct-legend"><img src="legend_v.png" width="20px"></img><span id="legend-vertical"></span></span>
+ 			<span class="ct-legend horizontal"><img src="legend_h.png" width="20px"></img><span id="legend-horizontal"></span></span>
+ 			<span class="ct-legend vertical"><img src="legend_v.png" width="20px"></img><span id="legend-vertical"></span></span>
  		</h4>
   	<div class="row align-center">
 			<div id="SOM" class="SOM col-xs-offset-1 col-xs-9 text-center"></div>
