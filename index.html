@@ -137,7 +137,7 @@ function updateSOM(testsom, divID){
 			result["colorInfo"] = JSON.parse(JSON.stringify(reverseLookup(rgbColor)[0]));
 			result["x"] = i;
 			result["y"] = j;
-			result["lab"] = $.colorspaces.make_color('sRGB', [result.color[0]/256, result.color[1]/256, result.color[2]/256]).as("CIELAB");
+			result["lab"] = $.colorspaces.make_color('sRGB', [rgbColor.r/256, rgbColor.g/256, rgbColor.b/256]).as("CIELAB");
       
 			return result;
 		}))
