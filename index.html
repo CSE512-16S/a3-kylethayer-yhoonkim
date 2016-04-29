@@ -48,16 +48,13 @@ function start(){
 			loadSOM();
 		});
 		draw(sorted_color_names_by_lang_name(currentLanguages[1-currentSide]), function(data){drawColorDropdowns(data, 1)});
-		//drawColorDropdowns();
-
 	});
 }
 
 function loadSOM(){
-	loadColor(function(){
-		listColorNames();
-		createSOM();
-	});
+	prepareColor();
+	listColorNames();
+	createSOM();
 }
 
 function languageDropdowns(languages){
@@ -240,10 +237,6 @@ function selectDropdownColorName(name, side){
 
 function listColorNamesForLang(side){
     var lang = currentLanguages[side]
-	//var langStr = "current";
-	//if(lang != currentLanguages[currentSide]){
-	//	langStr = "other";
-	//}
 	langStr = side;
 	
 	var similarDiv = document.getElementById("Lang"+(side+1)+"Colors").getElementsByClassName("similarColorNames")[0];
