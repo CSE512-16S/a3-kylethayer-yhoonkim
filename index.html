@@ -125,8 +125,6 @@ function createSOM(){
 
 function updateSOM(testsom, divID){
 
-
-
 	var d3Data = testsom.neurons.reduce(function(prev, neuron, i){
 		return prev.concat(neuron.map(function(n,j){
 			var color = n.weights.map(function(w){ return Math.round(w); });
@@ -152,7 +150,9 @@ function updateSOM(testsom, divID){
 	 				// .attr("ry",1)
 	 				.attr("width", boxWidth)
 	 				.attr("height", boxHeight)
-	 				.style("fill", function(d){ return "rgb(" + d.color[0] + "," + d.color[1] + "," + d.color[2] +")"});
+	 				.style("fill", function(d){ return "rgb(" + d.color[0] + "," + d.color[1] + "," + d.color[2] +")"})
+	 				.on('mouseover', highlightNode)
+	 				.on('mouseout', deHighlightNode);
 	
 	somNodes.append("text")
 	 				.attr("x", function(d){ return (d.x+0.5) * boxWidth; })
@@ -203,14 +203,60 @@ function updateSOM(testsom, divID){
 
 
 }
+function highlightNode(event){
+	var hasLang1ColorName = hasColorName(this, currentColors[0], currentLanguage);
+	var hasLang2ColorName = hasColorName(this, currentColors[1], currentOtherLanguage);
 
+	$(".som-node").each(function(i){
+		if( !hasLang1ColorName && !hasLang2ColorName ){
+			if ( !hasColorName(this, currentColors[0], currentLanguage) && !hasColorName(this, currentColors[1], currentOtherLanguage)) {
+				this.style.opacity = 1;
+			}
+			else {
+				this.style.opacity = .0;
+			}
+			$('#color-name-header').html("&nbsp;");
+		}
+		else if (hasLang1ColorName) {
+			if (hasLang2ColorName) {
+				this.style.opacity = .0;
+				if ( hasColorName(this, currentColors[0], currentLanguage) ||  hasColorName(this, currentColors[1], currentOtherLanguage)) {
+					this.style.opacity = 1;
+				}
+				$('#color-name-header').html(currentColors.join(", "));
+			}
+			else{
+				this.style.opacity = .0;
+				if ( hasColorName(this, currentColors[0], currentLanguage) ) {
+					this.style.opacity = 1;
+				}
+				$('#color-name-header').html(currentColors[0]);
+			}
+		}
+		else if (hasLang2ColorName) {
+			this.style.opacity = .0;
+			if ( hasColorName(this, currentColors[1], currentOtherLanguage)) {
+				this.style.opacity = 1;
+			}
+			$('#color-name-header').html(currentColors[1]);
+		}
+		
+
+	});
+
+
+}
+function deHighlightNode(event){
+	$(".som-node").each(function(i){
+		this.style.opacity = 1;
+	});
+}
 
 
 function drawSOMByD3(n, m, divID){
   svg = d3.select("#"+divID).append("svg")
       .attr("width", somWidth )
-      .attr("height", somHeight )
-      .style("background-color","black")
+      .attr("height", somHeight );
 }
 
 
@@ -302,6 +348,25 @@ function highlightColor(lang1ColorName, lang2ColorName){
 	// 	}
 	// });
 
+	$("#" + divName + " .som-node").each(function(i){
+		var JQthisRect = $('> rect',this);
+		var x = Number(JQthisRect.attr("x")), 
+				y = Number(JQthisRect.attr("y"));
+		var cx = (x + 10), cy = (y + 10);
+		var factor = 1;
+		if(!hasColorName(this, lang1ColorName, currentLanguage) == !hasColorName(this, lang2ColorName, currentOtherLanguage)){
+			if(!hasColorName(this, lang2ColorName, currentOtherLanguage)){
+				factor = 0.3;
+				JQthisRect.attr("transform", "translate("+ (-1*cx*(factor-1)) + "," + (-1*cy*(factor-1)) + ")scale("+factor+")");
+			}
+		}
+		else{
+				factor = 0.6;
+				JQthisRect.attr("transform", "translate("+ (-1*cx*(factor-1)) + "," + (-1*cy*(factor-1)) + ")scale("+factor+")");
+			}
+		
+	});
+
 	// $("#" + divName + " .som-node text").each(function(i){
 	// 	var JQthis = $(this);
 	// 	var lang1Names = this.__data__.colorInfo.names[currentLanguage];
@@ -322,63 +387,57 @@ function highlightColor(lang1ColorName, lang2ColorName){
 	// 	}
 	// });
 
-	var JQSomNode = $("#" + divName + " .som-node");
-	for (var i = 0; i < N; i++) {
-		for (var j = 0; j < M; j++) {
-			var thisNode = JQSomNode[ i * M + j ];
-			var JQNode = $(thisNode);
+	// var JQSomNode = $("#" + divName + " .som-node");
+	// for (var i = 0; i < N; i++) {
+	// 	for (var j = 0; j < M; j++) {
+	// 		var thisNode = JQSomNode[ i * M + j ];
+	// 		var JQNode = $(thisNode);
 			
-			thisNode["hasLang1ColorName"] = hasColorName(thisNode, lang1ColorName, currentLanguage);
-			thisNode["hasLang2ColorName"] = hasColorName(thisNode, lang2ColorName, currentOtherLanguage);
+	// 		thisNode["hasLang1ColorName"] = hasColorName(thisNode, lang1ColorName, currentLanguage);
+	// 		thisNode["hasLang2ColorName"] = hasColorName(thisNode, lang2ColorName, currentOtherLanguage);
 			
 
-			//upper one
-			if (j!==0) {
-				var upper = JQSomNode[i * M + j - 1];
-				// upper["hasLang1ColorName"] = hasColorName(upper, lang1ColorName, currentLanguage);
-				// upper["hasLang2ColorName"] = hasColorName(upper, lang2ColorName, currentOtherLanguage);
+	// 		//upper one
+	// 		if (j!==0) {
+	// 			var upper = JQSomNode[i * M + j - 1];
+	// 			// upper["hasLang1ColorName"] = hasColorName(upper, lang1ColorName, currentLanguage);
+	// 			// upper["hasLang2ColorName"] = hasColorName(upper, lang2ColorName, currentOtherLanguage);
 
-				//xor
-				if (upper.hasLang1ColorName != thisNode.hasLang1ColorName ) {
-					$('> .outer.top', thisNode).attr("stroke-opacity",1);
-				}
-				if (upper.hasLang2ColorName != thisNode.hasLang2ColorName ) {
-					$('> .inner.top', thisNode).attr("stroke-opacity",1);
-				};
-			}
-			//left one
-			if (i!==0) {
-				var left = JQSomNode[(i-1) * M + j ];
-				// left["hasLang1ColorName"] = hasColorName(left, lang1ColorName, currentLanguage);
-				// left["hasLang2ColorName"] = hasColorName(left, lang2ColorName, currentOtherLanguage);
+	// 			//xor
+	// 			if (upper.hasLang1ColorName != thisNode.hasLang1ColorName ) {
+	// 				$('> .outer.top', thisNode).attr("stroke-opacity",1);
+	// 			}
+	// 			if (upper.hasLang2ColorName != thisNode.hasLang2ColorName ) {
+	// 				$('> .inner.top', thisNode).attr("stroke-opacity",1);
+	// 			};
+	// 		}
+	// 		//left one
+	// 		if (i!==0) {
+	// 			var left = JQSomNode[(i-1) * M + j ];
+	// 			// left["hasLang1ColorName"] = hasColorName(left, lang1ColorName, currentLanguage);
+	// 			// left["hasLang2ColorName"] = hasColorName(left, lang2ColorName, currentOtherLanguage);
 
-				//xor
-				if (left.hasLang1ColorName != thisNode.hasLang1ColorName ) {
-					$('> .outer.left', thisNode).attr("stroke-opacity",1);
-				}
-				if (left.hasLang2ColorName != thisNode.hasLang2ColorName ) {
-					$('> .inner.left', thisNode).attr("stroke-opacity",1);
-				};
-			}
+	// 			//xor
+	// 			if (left.hasLang1ColorName != thisNode.hasLang1ColorName ) {
+	// 				$('> .outer.left', thisNode).attr("stroke-opacity",1);
+	// 			}
+	// 			if (left.hasLang2ColorName != thisNode.hasLang2ColorName ) {
+	// 				$('> .inner.left', thisNode).attr("stroke-opacity",1);
+	// 			};
+	// 		}
 						
-		};
-	};
+	// 	};
+	// };
 
-	function hasColorName(node, langColorName, which){
-		var langNames = node.__data__.colorInfo.names[which];
-
-		return !!langNames && langNames.hasOwnProperty(langColorName)
-	}
-	
-		
-
-		
-
-
-	
 }
 
 
+function hasColorName(node, langColorName, which){
+	var langNames = node.__data__.colorInfo.names[which];
+
+	return !!langNames && langNames.hasOwnProperty(langColorName)
+}
+	
 
 
 function nameMouseOver(element){
@@ -389,12 +448,11 @@ function nameMouseOver(element){
 	currentMouseOver[lang] = element.attributes.name.nodeValue;
 	
 	$(".som-node").each(function(i){
-		var langNames = this.__data__.colorInfo.names[lang];
-		if( langNames && langNames.hasOwnProperty(currentMouseOver[lang])){
+		if(  hasColorName(this, currentMouseOver[lang], lang) ){
 			this.style.opacity = 1;
 		}
 		else {
-			this.style.opacity = .25;
+			this.style.opacity = .0;
 		}
 	});
 }
@@ -489,46 +547,50 @@ function selectColor(lang1, lang2, colorName){
 </head>
 
 <body onload = "start()">
-    <div class="container">
-  	  <!--#include virtual="../navbar.html" -->
-	 <H1 style="text-align: center;">Color Translator</H1>
-	  	<div class="row align-center">
-  			<div id="SOM" class="SOM col-xs-offset-1 col-xs-9 text-center"></div>
-      </div>
-      <div class="row align-center">
-        <div id="language1" class="lang-region col-xs-6">
-          <div id="SOM1" class="SOM"></div>
-		  <br>
-		  <div style="float:left;margin-right:15px">Language: </div><div id="lang1Dropdown"></div>
-		  <br>
-          <div style="float:left;margin-right:45px">Color: </div><div id="lang1ColorSelector"></div>
-		  <div style="margin-left:130px; margin-top:3px;">Lock Color: <input type="checkbox" id="lock1" /></div>
-          <div id="Lang1Colors">
-            <div class="name-list">
-              <b>Related Colors</b>
-              <div class="similarColorNames"></div>
-            </div>
-          </div>
-        </div>
+	<div class="container">
+	  <!--#include virtual="../navbar.html" -->
+	<H1 style="text-align: center;">Color Translator</H1>
+	<h4 style="text-align: center;" id="color-name-header">&nbsp;</h4>
+		<div class="row align-center">
+			<div id="SOM" class="SOM col-xs-offset-1 col-xs-9 text-center"></div>
+		</div>
 
-        <div id="language2" class="lang-region col-xs-6">
-          <div id="SOM2" class="SOM"></div>
-		  <br>
-		  <div style="float:left;margin-right:15px">Language: </div><div id="lang2Dropdown"></div>
-		  <br>
-          <div style="float:left;margin-right:45px">Color: </div><div id="lang2ColorSelector"></div>
-		  <div style="margin-left:130px; margin-top:3px;">Lock Color: <input type="checkbox" id="lock2" /></div>
-          <div id="Lang2Colors">
-            <div class="name-list">
-              <b>Related Colors</b>
-              <div class="similarColorNames"></div>
-            </div>
-          </div>
-        </div>
-      </div>
+		<div class="row align-center">
+		  <div id="language1" class="lang-region col-xs-6">   
+			<br>
+			<div style="float:left;margin-right:15px">Language: </div>
+			<div id="lang1Dropdown"></div>
+			<br>
+	    <div style="float:left;margin-right:45px">Color: </div>
+	    <div id="lang1ColorSelector"></div>
+			<div style="margin-left:130px; margin-top:3px;">Lock Color: <input type="checkbox" id="lock1" /></div>
+		    <div id="Lang1Colors">
+		      <div class="name-list">
+		        <b>Related Colors</b>
+		        <div class="similarColorNames"></div>
+		      </div>
+		    </div>
+		  </div>
 
-    </div>
+		  <div id="language2" class="lang-region col-xs-6">
+		    
+			<br>
+			<div style="float:left;margin-right:15px">Language: </div>
+			<div id="lang2Dropdown"></div>
+			<br>
+	    <div style="float:left;margin-right:45px">Color: </div>
+	    <div id="lang2ColorSelector"></div>
+			<div style="margin-left:130px; margin-top:3px;">Lock Color: <input type="checkbox" id="lock2" /></div>
+			    <div id="Lang2Colors">
+			      <div class="name-list">
+			        <b>Related Colors</b>
+			        <div class="similarColorNames"></div>
+			      </div>
+			    </div>
+			  </div>
+		</div>
 
-</div>
+	</div>
+	
 </body>
 </html>
