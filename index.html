@@ -105,7 +105,8 @@ function createSOM(){
 	var data = [];
 	for(var i in currentColorIds){
 		var color_id = currentColorIds[i];
-		data.push([colorValues[color_id].r, colorValues[color_id].g, colorValues[color_id].b]);
+		var labColor = d3.lab("rgb("+colorValues[color_id].r+","+colorValues[color_id].g+","+colorValues[color_id].b+")");
+		data.push([labColor.l, labColor.a, labColor.b]);
 	}
 	data.sort(function() {
 	  return .5 - Math.random();
@@ -127,9 +128,12 @@ function updateSOM(testsom, divID){
 
 	var d3Data = testsom.neurons.reduce(function(prev, neuron, i){
 		return prev.concat(neuron.map(function(n,j){
-			var color = n.weights.map(function(w){ return Math.round(w); });
-			var result = {"color": color};
-			result["colorInfo"] = JSON.parse(JSON.stringify(reverseLookup({r: color[0], g: color[1], b: color[2]})[0]));
+			var labColor = d3.lab(n.weights[0], n.weights[1], n.weights[2]);
+			var rgbColor = labColor.rgb();
+			//var color = n.weights.map(function(w){ return Math.round(w); });
+			var result = {"rgbColor": rgbColor};
+			result["labColor"] = labColor;
+			result["colorInfo"] = JSON.parse(JSON.stringify(reverseLookup(rgbColor)[0]));
 			result["x"] = i;
 			result["y"] = j;
 			return result;
@@ -152,7 +156,7 @@ function updateSOM(testsom, divID){
 	 				// .attr("ry",1)
 	 				.attr("width", boxWidth + .5)
 	 				.attr("height", boxHeight + .5)
-	 				.style("fill", function(d){ return "rgb(" + d.color[0] + "," + d.color[1] + "," + d.color[2] +")"});
+	 				.style("fill", function(d){ return "rgb(" + d.rgbColor.r + "," + d.rgbColor.g+ "," + d.rgbColor.b +")"});
 
 	//horizontal midline
 	somNodesEnter.append("line")
@@ -252,7 +256,9 @@ function listColorNamesForLang(side){
 	}
 	
 	var allColors = matchingColorNamesArray.concat(unMatchingColorNamesArray);
-	allColors = allColors.slice(0, 40);
+	if(allColors.length > 40){
+		allColors = allColors.slice(0, 40);
+	}
 	
 	if(side != currentSide &&  !$("#lock" + (1 + side)).is(':checked')){
 		currentColors[side] = bestMatch;
@@ -261,10 +267,10 @@ function listColorNamesForLang(side){
 	var spanStrings = [];
 	for(var i in allColors){
 		var spanStr =  colorNameSpan(
-						matchingColorNamesArray[i].name,  
+						allColors[i].name,  
 						langStr);
 						//currentColors[]
-		if(matchingColorNamesArray[i].name == currentColors[side]){
+		if(allColors[i].name == currentColors[side]){
 			//skip current color
 		} else{
 			spanStrings.push(spanStr);
