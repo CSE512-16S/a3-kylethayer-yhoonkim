@@ -83,9 +83,11 @@ We choose the dropdown boxes for interaction methodes because the types of "lang
 
 In the storyboard, we attempted to present the regions by drawing their border but it seemed not slient as we want. So we tried this in several ways and pick the final version as you see. The other our approaches are the below. 
 
-<img src="storyboard/map_1.jpg" width="480">
-<img src="storyboard/map_2.jpg" width="480">
-<img src="storyboard/map_3.jpg" widtht="480">
+<img src="storyboard/map0.jpg" width="480">
+<img src="storyboard/map1.jpg" width="480">
+<img src="storyboard/map2.jpg" width="480">
+<img src="storyboard/map3.jpg" widtht="480">
+<img src="storyboard/map4.jpg" widtht="480">
 
 
 (A paragraph explaining changes between the storyboard and the final implementation.)
