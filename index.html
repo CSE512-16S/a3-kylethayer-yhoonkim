@@ -44,11 +44,21 @@ function start(){
 	draw(num_answers_by_lang, languageDropdowns);
 
 	loadAllColors(function(){
+	    var languagesLoaded = 0;
 		draw(sorted_color_names_by_lang_name(currentLanguages[currentSide]), function(data){
-			drawColorDropdowns(data, 0)
-			loadSOM();
+			drawColorDropdowns(data, 0);
+			languagesLoaded++;
+			if(languagesLoaded == 2){
+				loadSOM();
+			}
 		});
-		draw(sorted_color_names_by_lang_name(currentLanguages[1-currentSide]), function(data){drawColorDropdowns(data, 1)});
+		draw(sorted_color_names_by_lang_name(currentLanguages[1-currentSide]), function(data){
+			drawColorDropdowns(data, 1);
+			languagesLoaded++;
+			if(languagesLoaded == 2){
+				loadSOM();
+			}
+		});
 	});
 }
 
@@ -373,11 +383,21 @@ function selectLang(element){
 	}
 
 	loadAllColors(function(){
+		var languagesLoaded = 0;
 		draw(sorted_color_names_by_lang_name(currentLanguages[currentSide]), function(data){
 			drawColorDropdowns(data, 0)
-			loadSOM();
+			languagesLoaded++;
+			if(languagesLoaded == 2){
+				loadSOM();
+			}
 		});
-		draw(sorted_color_names_by_lang_name(currentLanguages[1-currentSide]), function(data){drawColorDropdowns(data, 1);});
+		draw(sorted_color_names_by_lang_name(currentLanguages[1-currentSide]), function(data){
+			drawColorDropdowns(data, 1);
+			languagesLoaded++;
+			if(languagesLoaded == 2){
+				loadSOM();
+			}
+		});
 	});
 }
 
