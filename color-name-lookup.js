@@ -4,11 +4,23 @@ var rgbLookup = {};
 var currentColorIds = [];
 var viewedColorNames = {};
 var colorsLoaded = [];
+var sortedColorNames = {};
 
 function draw(query, func) {
 	$.get(query, function(data) {
 		func.apply(this, [data]);
 	});
+}
+
+function getSortedColorNames(lang, callback){
+	if(sortedColorNames[lang]){
+		callback(sortedColorNames[lang]);
+	} else{
+		draw(sorted_color_names_by_lang_name(lang), function(data){
+			sortedColorNames[lang] = data;
+			callback(data);
+		});
+	}
 }
 
 function rgbString(r, g, b){
