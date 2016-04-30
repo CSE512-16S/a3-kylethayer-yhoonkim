@@ -18,7 +18,7 @@ We collected the dataset from the Amazon Mechanical Turk during CSE510 course pr
 - color code in R,G,B
 - colorname 
 - language
-- 
+
 Note that this is a very small data set and many of the people who gave us color names were not native speakers of the language they answered in. Please do not assume that our data reflects color names accurately. We are planning on doing a much larger data collection this quarter.
 
 This visualization is a redesign of [one we made for a class project](http://carlise.cs.washington.edu:8385/color-translator/index.html) for HCI (CSE510) last quarter.
