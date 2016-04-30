@@ -3,11 +3,24 @@ var colorValues = {};
 var rgbLookup = {};
 var currentColorIds = [];
 var viewedColorNames = {};
+var colorsLoaded = [];
+var sortedColorNames = {};
 
 function draw(query, func) {
 	$.get(query, function(data) {
 		func.apply(this, [data]);
 	});
+}
+
+function getSortedColorNames(lang, callback){
+	if(sortedColorNames[lang]){
+		callback(sortedColorNames[lang]);
+	} else{
+		draw(sorted_color_names_by_lang_name(lang), function(data){
+			sortedColorNames[lang] = data;
+			callback(data);
+		});
+	}
 }
 
 function rgbString(r, g, b){
@@ -41,78 +54,110 @@ function addColorName(id, langId, name){
 }
 
 function loadAllColors(callbackFunction){
-	colorValues = {}
-	$.ajax({
-		url: connString + "/answers?",
-		data: {
-			select: "color_name,color{color_id,r,g,b},assignments{assignment_id,languages{language_id,language}}", 
-			"assignments.languages.language": "in." + currentLanguages[currentSide] + "," + currentLanguages[1-currentSide]
-		},
-		success: function(data) {
-			for (var i = 0; i < data.length; i++) {
-				
-				if(data[i].color === null || data[i].assignments.languages === null){
-					continue;
+	
+	var colorsToLoad = [];
+	if(!colorsLoaded.includes(currentLanguages[currentSide])){
+		colorsToLoad.push(currentLanguages[currentSide]);
+		colorsLoaded.push(currentLanguages[currentSide]);
+	}
+	if(!colorsLoaded.includes(currentLanguages[1-currentSide])){
+		colorsToLoad.push(currentLanguages[1-currentSide]);
+		colorsLoaded.push(currentLanguages[1-currentSide]);
+	}
+
+	if(colorsToLoad.length > 0){
+		$.ajax({
+			url: connString + "/answers?",
+			data: {
+				select: "color_name,color{color_id,r,g,b},assignments{assignment_id,languages{language_id,language}}", 
+				"assignments.languages.language": "in." + colorsToLoad.join()
+			},
+			success: function(data) {
+				for (var i = 0; i < data.length; i++) {
+					
+					if(data[i].color === null || data[i].assignments.languages === null){
+						continue;
+					}
+					var color_id = data[i].color.color_id;
+					
+					//add if needed
+					addCurrentColorValue(
+							color_id, 
+							data[i].color.r, 
+							data[i].color.g,
+							data[i].color.b);
+					
+					langId = data[i].assignments.languages.language
+					addColorName(
+						color_id,
+						langId,
+						data[i].color_name);
 				}
-				var color_id = data[i].color.color_id;
-				
-				//add if needed
-				addCurrentColorValue(
-						color_id, 
-						data[i].color.r, 
-						data[i].color.g,
-						data[i].color.b);
-				
-				langId = data[i].assignments.languages.language
-				addColorName(
-					color_id,
-					langId,
-					data[i].color_name);
+				callbackFunction();
 			}
-			callbackFunction();
-		}
-		
-	});
+			
+		});
+	} else{
+		callbackFunction();
+	}
 }
 
-function loadColor(callbackFunction){
+function prepareColor(){
 	currentColorIds = [];
 	viewedColorNames = {};
 	
 	for (var colorId in colorValues) {
-		if(typeof colorValues[colorId].names[currentLanguages[currentSide]] !== "undefined"){
-			var thisColorNames = Object.keys(colorValues[colorId].names[currentLanguages[currentSide]]);
-			if(thisColorNames.includes(currentColors[currentSide])){
+		if(typeof colorValues[colorId].names[currentLanguages[0]] !== "undefined"){
+			var thisColorNames = Object.keys(colorValues[colorId].names[currentLanguages[0]]);
+			if(thisColorNames.includes(currentColors[0])){
+				currentColorIds.push(colorId);
+			}
+		}
+		if(typeof colorValues[colorId].names[currentLanguages[1]] !== "undefined"){
+			var thisColorNames = Object.keys(colorValues[colorId].names[currentLanguages[1]]);
+			if(thisColorNames.includes(currentColors[1])){
 				currentColorIds.push(colorId);
 			}
 		}
 	}
-	
-	findMatchingColors(callbackFunction);
+
+	findMatchingColors();
 }
 
-function findMatchingColors(callbackFunction){
-	
-	var matchingSameColorNamesArray = getColorNames(currentLanguages[currentSide], currentColors[currentSide], currentLanguages[currentSide])[0];
-	var matchingOtherColorNamesArray = getColorNames(currentLanguages[1-currentSide], currentColors[currentSide], currentLanguages[currentSide])[0];
-	
-	//optional code to chose top 50 color names for each
-	var numMatchingColors = 50;
-	if(matchingSameColorNamesArray.length > numMatchingColors){
-		matchingSameColorNamesArray = matchingSameColorNamesArray.slice(0, numMatchingColors);
+function findMatchingColors(){
+	//get matching colors for the current color on each side of the display
+	var matchColor1toLang1 = getColorNames(currentLanguages[0], currentColors[0], currentLanguages[0])[0];
+	var matchColor1toLang2 = getColorNames(currentLanguages[1], currentColors[0], currentLanguages[0])[0];
+	var matchColor2toLang2 = getColorNames(currentLanguages[1], currentColors[1], currentLanguages[1])[0];
+	var matchColor2toLang1 = getColorNames(currentLanguages[0], currentColors[1], currentLanguages[1])[0];
+
+	//restrict the size of both lists
+	var numMatchingColors = 20;
+	if(matchColor1toLang1.length > numMatchingColors){
+		matchColor1toLang1 = matchColor1toLang1.slice(0, numMatchingColors);
 	}
-	if(matchingOtherColorNamesArray.length > numMatchingColors){
-		matchingOtherColorNamesArray = matchingOtherColorNamesArray.slice(0, numMatchingColors);
+	if(matchColor1toLang2.length > numMatchingColors){
+		matchColor1toLang2 = matchColor1toLang2.slice(0, numMatchingColors);
 	}
-	
-	var sameColorNames = matchingSameColorNamesArray.map(function(c){return c.name});
-	var otherColorNames = matchingOtherColorNamesArray.map(function(c){return c.name});
+	if(matchColor2toLang1.length > numMatchingColors){
+		matchColor2toLang1 = matchColor2toLang1.slice(0, numMatchingColors);
+	}
+	if(matchColor2toLang2.length > numMatchingColors){
+		matchColor2toLang2 = matchColor2toLang2.slice(0, numMatchingColors);
+	}
+
+	var lang1ColorNames = [];
+	lang1ColorNames = lang1ColorNames.concat(matchColor1toLang1.map(function(c){return c.name}));
+	lang1ColorNames = lang1ColorNames.concat(matchColor2toLang1.map(function(c){return c.name}));
+	var lang2ColorNames = [];
+	lang2ColorNames = lang2ColorNames.concat(matchColor1toLang2.map(function(c){return c.name}));
+	lang2ColorNames = lang2ColorNames.concat(matchColor2toLang2.map(function(c){return c.name}));
 
 	for (var colorId in colorValues) {
 		if(typeof colorValues[colorId].names[currentLanguages[currentSide]] !== "undefined"){
 			var thisColorNames = Object.keys(colorValues[colorId].names[currentLanguages[currentSide]]);
 			for(var j = 0; j < thisColorNames.length; j++){
-				if(sameColorNames.includes(thisColorNames[j])){
+				if(lang1ColorNames.includes(thisColorNames[j])){
 					if(!currentColorIds.includes(colorId)){ //if we haven't already seen this color, add it
 						currentColorIds.push(colorId);
 					}
@@ -122,7 +167,7 @@ function findMatchingColors(callbackFunction){
 		if(typeof colorValues[colorId].names[currentLanguages[1-currentSide]] !== "undefined"){
 			var thisColorNames = Object.keys(colorValues[colorId].names[currentLanguages[1-currentSide]]);
 			for(var j = 0; j < thisColorNames.length; j++){
-				if(otherColorNames.includes(thisColorNames[j])){
+				if(lang2ColorNames.includes(thisColorNames[j])){
 					if(!currentColorIds.includes(colorId)){ //if we haven't already seen this color, add it
 						currentColorIds.push(colorId);
 					}
@@ -130,7 +175,6 @@ function findMatchingColors(callbackFunction){
 			}
 		}
 	}
-	callbackFunction();
 }
 
 
@@ -153,16 +197,16 @@ function addViewedColorNames(id, langId, names){
 	}
 }
 
-function getColorNames(langId, currentColorName, currentLanguage){
+function getColorNames(destLangId, currentColorName, currentLanguage){
 	var finalColorNames = {};
 	for(var color_id in colorValues){
 		var colorInfo = colorValues[color_id];
-		if (typeof colorInfo.names[langId] !== undefined){
-			for(var colorName in colorInfo.names[langId]){
+		if (typeof colorInfo.names[destLangId] !== undefined){
+			for(var colorName in colorInfo.names[destLangId]){
 				if(typeof finalColorNames[colorName] === "undefined"){
-					finalColorNames[colorName] = colorInfo.names[langId][colorName];
+					finalColorNames[colorName] = colorInfo.names[destLangId][colorName];
 				} else {
-					finalColorNames[colorName] += colorInfo.names[langId][colorName];
+					finalColorNames[colorName] += colorInfo.names[destLangId][colorName];
 				}
 			}
 		}
@@ -174,12 +218,12 @@ function getColorNames(langId, currentColorName, currentLanguage){
 	matchingColorNamesArray = [];
 	unMatchingColorNamesArray = [];
 	for(var colorName in finalColorNames){
-		if(colorScores[langId][colorName].matchingColors > 0){
+		if(colorScores[destLangId][colorName].matchingColors > 0){
 			matchingColorNamesArray.push({
 				name: colorName,
 				count: finalColorNames[colorName],
-				score: colorScores[langId][colorName].score,
-				matchingColors: colorScores[langId][colorName].matchingColors
+				score: colorScores[destLangId][colorName].score,
+				matchingColors: colorScores[destLangId][colorName].matchingColors
 			});
 		}else{
 			unMatchingColorNamesArray.push({
