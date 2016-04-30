@@ -8,7 +8,7 @@ Assignment3
 
 ## Color Translater
 
-![Thumbnail](storyboard/hatched.jpg)
+![Thumbnail](storyboard/hatched.jpg =200x)
 
 Color Translater presents the translation of colornames in different language through color map. 
 Through the cycle of translating, we'd like users you to explore the color-colorname-language space!
