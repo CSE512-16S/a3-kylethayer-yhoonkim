@@ -8,8 +8,7 @@ Assignment3
 
 ## Color Translater
 
-![Thumbnail](We ended up settling on using horizintal and verticle lines overlayed on the color map.
-<img src="storyboard/hatched.jpg" widtht="400">)
+![Thumbnail](storyboard/hatched.jpg)
 
 Color Translater presents the translation of colornames in different language through color map. 
 Through the cycle of translating, we'd like users you to explore the color-colorname-language space!
