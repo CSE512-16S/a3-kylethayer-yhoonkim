@@ -85,22 +85,26 @@ At this point we either needed to get more data, find a way of cleanin our data 
 
 Our next attempt was to use size of the rectangles used to display the nodes. Full size is when both selected color names were used for a color, mid-size is when only one of the two was used, and small for when neight color name was used for a color:
 <img src="storyboard/map1.jpg" width="480">
+
 We thought this was the best looking of all our visualizations, but it required interaction to discover which of the two color terms applied to the mid-size color tiles.
 
 Next we tried adding vertical or horizontal direction to the mid-size tiles to show which color term went with it:
 <img src="storyboard/map4.jpg" widtht="480">
+
 The reason we rejected this one was because it was hard to visually group together the squares with either the verticle or horizontal rectangles. 
 
 Next we tried variations of verticle and horizontal rectangles an crosses for when both names applied.
 <img src="storyboard/map2.jpg" width="480">
 <img src="storyboard/map3.jpg" widtht="480">
+
 These worked better. We could visually group each term's area separately and see the overlap, but we felt there was too much lost with all the white space.
 
 We ended up settling on using horizintal and verticle lines overlayed on the color map.
+<img src="storyboard/hatched.jpg" widtht="800">
 
+These lines highlight color areas and are fairly easy to find against light colors, though they can fail to show up against dark colors. We had trouble deciding what to do since sometimes our map has both bright and dark colors at the same time. The lines do obscure the color they highlight some, changing how dark they look, but almost all means of highlighting colors had some problem with changing the appearance of the colors to some extent. 
 
-
-(A paragraph explaining changes between the storyboard and the final implementation.)
+One possibility for future consideration would be to go back to the simply sized squares, but use two displays of the same Self-Organizing Map, one for each color term. This would probably be more visually pleasing, but it would be challenging to directly observer smaller differences between color name borders.
 
 
 ## Development Process
