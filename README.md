@@ -8,7 +8,8 @@ Assignment3
 
 ## Color Translater
 
-![Thumbnail](thumbnail.png)
+![Thumbnail](We ended up settling on using horizintal and verticle lines overlayed on the color map.
+<img src="storyboard/hatched.jpg" widtht="400">)
 
 Color Translater presents the translation of colornames in different language through color map. 
 Through the cycle of translating, we'd like users you to explore the color-colorname-language space!
@@ -79,7 +80,7 @@ In the storyboard, we attempted to present the regions by drawing their border(t
 <img src="storyboard/mapOriginal.png" width="960">
 
 Even when we tried to increase the resolution of the Self-Organizing Map, the holes in our data still made it too hard to read:
-<img src="storyboard/map1.5.jpg" width="480">
+<img src="storyboard/map0.5.jpg" width="480">
 
 At this point we either needed to get more data, find a way of cleanin our data or trying a different visualization.
 
