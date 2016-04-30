@@ -1,6 +1,10 @@
+svg{
+	background-color: white;
+}
+
 .nameSpan {
   white-space: nowrap;
-  margin-right: 2px;
+  margin-left: 2px;
 }
 
 .nameSpan:hover { 
@@ -50,4 +54,8 @@ text.axis-workweek {
 
 text.axis-worktime {
   fill: #000;
+}
+
+span.ct-legend + span.ct-legend {
+  margin-left: 20px;
 }
