@@ -22,13 +22,7 @@ We collected the dataset from the Amazon Mechanical Turk during CSE510 course pr
 
 ## Running Instructions
 
-Put your running instructions here. (Tell us how to run your visualization.)
-
-If your visualization is web-based,  it would be great if your submission can be opened online. [Github Pages](http://pages.github.com/) is a good and easy way to put your visualization online so you can put your link here.  For example:
-
-Access our visualization at http://cse512-16s.github.io/a3-jheer-mcorrell-jhoffs/ or download this repository and run `python -m SimpleHTTPServer 9000` and access this from http://localhost:9000/.
-
-If you put your work online, please also write a [one-line description and add a link to your final work](http://note.io/1n3u46s) so people can access it directly from the CSE512-16S page.
+Access our visualization at http://cse512-16s.github.io/a3-kylethayer-yhoonkim/, or download this repository and run `python -m SimpleHTTPServer 9000` and access this from http://localhost:9000/.
 
 ## Story Board
 
