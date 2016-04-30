@@ -8,17 +8,20 @@ Assignment3
 
 ## Color Translater
 
-![Thumbnail](thumbnail.png)
+![Thumbnail](storyboard/hatched.jpg)
 
 Color Translater presents the translation of colornames in different language through color map. 
 Through the cycle of translating, we'd like users you to explore the color-colorname-language space!
 
-We collected the dataset from the Amazon Mechanical Turk during CSE510 course project. The dataset is composed of columns like the below.
+We collected the dataset from the Amazon Mechanical Turk during CSE510 course project. The dataset is comprised of the following.
 
 - color code in R,G,B
 - colorname 
 - language
+- 
+Note that this is a very small data set and many of the people who gave us color names were not native speakers of the language they answered in. Please do not assume that our data reflects color names accurately. We are planning on doing a much larger data collection this quarter.
 
+This visualization is a redesign of [one we made for a class project](http://carlise.cs.washington.edu:8385/color-translator/index.html) for HCI (CSE510) last quarter.
 
 ## Running Instructions
 
@@ -26,16 +29,32 @@ Access our visualization at http://cse512-16s.github.io/a3-kylethayer-yhoonkim/,
 
 ## Story Board
 
-We considered three stories of using Color Translater.
+For our visualization we wanted to redesign [a visualization we made for a class project](http://carlise.cs.washington.edu:8385/color-translator/index.html) last quarter in CSE510. That visualization used Self-Organizing Maps to make a 2D layout of the relevant color space, which was displayed using colored squares for each node of the Map.
+
+We liked how that visualization allowed exploration of the data, but it was confusing to new users, hard to compare and hard to use.
+
+We chose three specific user stories from the old Color Translator, plus desire for general exploration. Our intention was to focus on how these tasks could be done with greater ease and clarity:
 
 1. Translate a colorname in another language.
 2. See what color a colorname indicates 
 3. Compare two colornames by their corresponding colors.  
 4. Explore the color-colorname-language space.
 
-To address these stories, we suggested the interface like the below.
+Our first major redesign was to only have one view of the Self-Organizing Map, which we thought would make comparisons easier, and make it more obvious what was being displayed.
+
+We choose the dropdown boxes for interaction methodes because the types of "language" and "colorname" in our dataset are nominal. One of other design choices was using keyboard as interaction input like NameVoyager. It could give more freedom and easy access to explore the languages and colornames. But we set this as a stretch-goal in order to meet the schedule. 
+
+We decided the interface would automatically select a suggested translation for the other language when a color is selected, and we wanted this to work symmetrically from both the left and right side. We did still want users to pick two arbitrary colors without the auto-translation changing things, so we went through a number of possibilites:
+
+<img src="storyboard/interface_candidates.jpg" height="480">
+
+ As you can see, we brainstormed possible UIs for controling the mode (auto translation mode / comparing mode) of ColorTranslater (like the below) or using 'Lock' checkboxes are for fixing the selected items of the dropboxes. And we decided to provide lock checkbox due to its' simplicity.
+
+
+In the end, we came up with this interface:
 ![interface](storyboard/interface_overview.png)
 
+Here are how a user would achieve their tasks:
 
 #### 1. Translate a color in another language.
 
@@ -62,16 +81,7 @@ To address these stories, we suggested the interface like the below.
 - Users can see the color regions of the translated colornames on the map by hovering their mouse cursor.
 - Iteratively doing #1,#2, and #3, user can explore the color-colorname-language space.
 
-
 (*For all four stories, User also can do the same things starting from right dropboxes.*)
-
-We choose the dropdown boxes for interaction methodes because the types of "language" and "colorname" in our dataset are nominal. One of other design choices was using keyboard as interaction input like NameVoyager. It could give more freedom and easy access to explore the languages and colornames. But we set this as a stretch-goal in order to meet the schedule. 
-
-'Lock' checkboxes are for fixing the selected items of the dropboxes. We want to translate the selected colorname instantly, while enabling people to compare arbitary two colors. So we brainstormed possible UIs for controling the mode (auto translation mode / comparing mode) of ColorTranslater (like the below). And we decided to provide lock checkbox due to its' simplicity.
-
-<img src="storyboard/interface_candidates.jpg" height="480">
-
-
 
 ### Changes between Storyboard and the Final Implementation
 
@@ -79,7 +89,7 @@ In the storyboard, we attempted to present the regions by drawing their border(t
 <img src="storyboard/mapOriginal.png" width="960">
 
 Even when we tried to increase the resolution of the Self-Organizing Map, the holes in our data still made it too hard to read:
-<img src="storyboard/map1.5.jpg" width="480">
+<img src="storyboard/map0.5.jpg" width="480">
 
 At this point we either needed to get more data, find a way of cleanin our data or trying a different visualization.
 
