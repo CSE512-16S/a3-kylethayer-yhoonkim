@@ -56,11 +56,11 @@ function addColorName(id, langId, name){
 function loadAllColors(callbackFunction){
 	
 	var colorsToLoad = [];
-	if(!colorsLoaded.includes(currentLanguages[currentSide])){
+	if(!colorsLoaded.indexOf(currentLanguages[currentSide]) >= 0){
 		colorsToLoad.push(currentLanguages[currentSide]);
 		colorsLoaded.push(currentLanguages[currentSide]);
 	}
-	if(!colorsLoaded.includes(currentLanguages[1-currentSide])){
+	if(!colorsLoaded.indexOf(currentLanguages[1-currentSide]) >= 0){
 		colorsToLoad.push(currentLanguages[1-currentSide]);
 		colorsLoaded.push(currentLanguages[1-currentSide]);
 	}
@@ -109,13 +109,13 @@ function prepareColor(){
 	for (var colorId in colorValues) {
 		if(typeof colorValues[colorId].names[currentLanguages[0]] !== "undefined"){
 			var thisColorNames = Object.keys(colorValues[colorId].names[currentLanguages[0]]);
-			if(thisColorNames.includes(currentColors[0])){
+			if(thisColorNames.indexOf(currentColors[0]) >= 0){
 				currentColorIds.push(colorId);
 			}
 		}
 		if(typeof colorValues[colorId].names[currentLanguages[1]] !== "undefined"){
 			var thisColorNames = Object.keys(colorValues[colorId].names[currentLanguages[1]]);
-			if(thisColorNames.includes(currentColors[1])){
+			if(thisColorNames.indexOf(currentColors[1]) >= 0){
 				currentColorIds.push(colorId);
 			}
 		}
@@ -157,8 +157,8 @@ function findMatchingColors(){
 		if(typeof colorValues[colorId].names[currentLanguages[currentSide]] !== "undefined"){
 			var thisColorNames = Object.keys(colorValues[colorId].names[currentLanguages[currentSide]]);
 			for(var j = 0; j < thisColorNames.length; j++){
-				if(lang1ColorNames.includes(thisColorNames[j])){
-					if(!currentColorIds.includes(colorId)){ //if we haven't already seen this color, add it
+				if(lang1ColorNames.indexOf(thisColorNames[j]) >= 0){
+					if(!currentColorIds.indexOf(colorId) >= 0){ //if we haven't already seen this color, add it
 						currentColorIds.push(colorId);
 					}
 				}
@@ -167,8 +167,8 @@ function findMatchingColors(){
 		if(typeof colorValues[colorId].names[currentLanguages[1-currentSide]] !== "undefined"){
 			var thisColorNames = Object.keys(colorValues[colorId].names[currentLanguages[1-currentSide]]);
 			for(var j = 0; j < thisColorNames.length; j++){
-				if(lang2ColorNames.includes(thisColorNames[j])){
-					if(!currentColorIds.includes(colorId)){ //if we haven't already seen this color, add it
+				if(lang2ColorNames.indexOf(thisColorNames[j]) >= 0){
+					if(!currentColorIds.indexOf(colorId) >= 0){ //if we haven't already seen this color, add it
 						currentColorIds.push(colorId);
 					}
 				}
@@ -256,7 +256,7 @@ function scoreColors(matchColorName, matchLangId){
 		var colorInfo = colorValues[color_id];
 		isCurrentColorAMatch = false;
 		if (typeof colorInfo.names[matchLangId] !== "undefined"){
-			if(Object.keys(colorInfo.names[matchLangId]).includes(matchColorName)){
+			if(Object.keys(colorInfo.names[matchLangId]).indexOf(matchColorName) >= 0){
 				isCurrentColorAMatch = true;
 				totalMatchingColors += 1;
 			}
