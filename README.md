@@ -29,9 +29,9 @@ Access our visualization at http://cse512-16s.github.io/a3-kylethayer-yhoonkim/,
 
 ## Story Board
 
-For our visualization we wanted to redesign [a visualization we made for a class project](http://carlise.cs.washington.edu:8385/color-translator/index.html) last quarter in CSE510. That visualization used Self-Organizing Maps to make a 2D layout of the relevant color space, which was displayed using colored squares for each node of the Map.
+For our visualization we wanted to redesign [a visualization we made for a class project](http://carlise.cs.washington.edu:8385/color-translator/index.html) last quarter in CSE510. That visualization used Self-Organizing Maps to make a 2D layout of the relevant color space, which was displayed using colored tiles for each node of the Map.
 
-We liked how that visualization allowed exploration of the data, but it was confusing to new users, hard to compare and hard to use.
+We liked how that visualization allowed exploration of the data, but it was confusing to new users, hard to compare and hard to use. 
 
 We chose three specific user stories from the old Color Translator, plus desire for general exploration. Our intention was to focus on how these tasks could be done with greater ease and clarity:
 
@@ -40,7 +40,7 @@ We chose three specific user stories from the old Color Translator, plus desire 
 3. Compare two colornames by their corresponding colors.  
 4. Explore the color-colorname-language space.
 
-Our first major redesign was to only have one view of the Self-Organizing Map, which we thought would make comparisons easier, and make it more obvious what was being displayed.
+Our first major redesign was to only have one view of the Self-Organizing Map, which we thought would make comparisons easier, and make it more obvious what was being displayed. Another change was we wanted to make everything work symmetrically. A large confusion in the old visualization was that the left was considered the "source" and the righ was the "target" and if a color name on the right was selected, the languages swapped locations to put that new color name as the "source." We wanted things to stay in place to make it easier to use.
 
 We choose the dropdown boxes for interaction methodes because the types of "language" and "colorname" in our dataset are nominal. One of other design choices was using keyboard as interaction input like NameVoyager. It could give more freedom and easy access to explore the languages and colornames. But we set this as a stretch-goal in order to meet the schedule. 
 
@@ -52,6 +52,7 @@ We decided the interface would automatically select a suggested translation for 
 
 
 In the end, we came up with this interface:
+
 ![interface](storyboard/interface_overview.png)
 
 Here are how a user would achieve their tasks:
@@ -84,6 +85,8 @@ Here are how a user would achieve their tasks:
 (*For all four stories, User also can do the same things starting from right dropboxes.*)
 
 ### Changes between Storyboard and the Final Implementation
+
+Our first, minor change from the storyboard was moving the "Lock" checkbox next to the color name and not the language, since it is the color being locked.
 
 In the storyboard, we attempted to present the regions by drawing their border(the first of the belows) but when we did so, it was very hard to intepret, both because it was too blocky, and also because our data was sparse and had holes in it:
 <img src="storyboard/mapOriginal.png" width="960">
@@ -119,8 +122,23 @@ One possibility for future consideration would be to go back to the simply sized
 
 ## Development Process
 
-Include:
-- Breakdown of how the work was split among the group members.
-- A commentary on the development process, including answers to the following questions:
-  - Roughly how much time did you spend developing your application?
-  - What aspects took the most time?
+To update the user interface we split the work as follows:
+ - Kyle
+  - Change the code to make the interface symmetric (the old version had the left as a "source" and right as a "destination").
+  - Fix bugs with the Self-Organizing Map
+  - Fix bugs with the color selection
+  - Create some of the highlighting methods
+ - Younghoon
+  - D3-ify the code that drew the Self-Organizing Map tiles.
+  - Merge the two SOMs into one (including all the code which referenced two)
+  - Create better code to use for highlighting the colors
+  - Create most of the highlighting methods
+
+We spent approxomately the following time each:
+ - 4 hours brainstorming and designing visualization
+ - 6 hours doing initial code fixing and creating the line version of the code
+ - 6 hours testing different ways of showing the two color areas on the same chart
+ - 4 hours debugging and cleaning up the interface
+ - 2 hours working on the writeup
+ 
+Of that, we hadn't planned on needing all the extra time to try new methods of showing the two different areas. Debugging also took a long time, but that is a normal, though frustrating reality of most programming projects.
