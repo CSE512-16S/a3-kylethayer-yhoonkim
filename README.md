@@ -13,11 +13,13 @@ Assignment3
 Color Translater presents the translation of colornames in different language through color map. 
 Through the cycle of translating, we'd like users you to explore the color-colorname-language space!
 
-We collected the dataset from the Amazon Mechanical Turk during CSE510 course project. The dataset is composed of columns like the below.
+We collected the dataset from the Amazon Mechanical Turk during CSE510 course project. The dataset is comprised of the following.
 
 - color code in R,G,B
 - colorname 
 - language
+- 
+Note that this is a very small data set and many of the people who gave us color names were not native speakers of the language they answered in. Please do not assume that our data reflects color names accurately. We are planning on doing a much larger data collection this quarter.
 
 
 ## Running Instructions
