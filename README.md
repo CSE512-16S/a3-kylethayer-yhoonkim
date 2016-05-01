@@ -8,7 +8,7 @@ Assignment3
 
 ## Color Translater
 
-![Thumbnail](storyboard/hatched2.jpg)
+![Thumbnail](storyboard/hatched2.JPG)
 
 Color Translater presents the translation of colornames in different language through color map. 
 Through the cycle of translating, we'd like users you to explore the color-colorname-language space!
@@ -117,7 +117,7 @@ We ended up settling on using horizintal and verticle lines overlayed on the col
 
 Initially we had trouble getting the lines to show up on both dark and light backgrounds, so we decided to make the lines in the hatch marks side-by-side black and white lines. With this, the white lines show up against dark backgrounds and the dark lines show up agains light backgrounds.
 
-<img src="storyboard/hatched2.jpg" widtht="800">
+<img src="storyboard/hatched2.JPG" widtht="800">
 
 The lines do obscure the color they highlight, both making the colors appear a little different in context and making it more of an effort to see the color behind the lines. Since almost all means of highlighting colors had some problem with changing the appearance of the colors to some extent, the other forms of highlighting tended to either be too hard to discern, or obscured the color even more. 
 
