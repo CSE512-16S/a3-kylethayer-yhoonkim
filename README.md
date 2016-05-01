@@ -8,7 +8,7 @@ Assignment3
 
 ## Color Translater
 
-![Thumbnail](storyboard/hatched.jpg)
+![Thumbnail](storyboard/hatched2.jpg)
 
 Color Translater presents the translation of colornames in different language through color map. 
 Through the cycle of translating, we'd like users you to explore the color-colorname-language space!
@@ -113,9 +113,13 @@ Next we tried variations of verticle and horizontal rectangles an crosses for wh
 These worked better. We could visually group each term's area separately and see the overlap, but we felt there was too much lost with all the white space.
 
 We ended up settling on using horizintal and verticle lines overlayed on the color map.
-<img src="storyboard/hatched.jpg" widtht="800">
+<img src="storyboard/hatched.jpg" widtht="480">
 
-These lines highlight color areas and are fairly easy to find against light colors, though they can fail to show up against dark colors. We had trouble deciding what to do since sometimes our map has both bright and dark colors at the same time. The lines do obscure the color they highlight some, changing how dark they look, but almost all means of highlighting colors had some problem with changing the appearance of the colors to some extent. 
+Initially we had trouble getting the lines to show up on both dark and light backgrounds, so we decided to make the lines in the hatch marks side-by-side black and white lines. With this, the white lines show up against dark backgrounds and the dark lines show up agains light backgrounds.
+
+<img src="storyboard/hatched2.jpg" widtht="800">
+
+The lines do obscure the color they highlight, both making the colors appear a little different in context and making it more of an effort to see the color behind the lines. Since almost all means of highlighting colors had some problem with changing the appearance of the colors to some extent, the other forms of highlighting tended to either be too hard to discern, or obscured the color even more. 
 
 One possibility for future consideration would be to go back to the simply sized squares, but use two displays of the same Self-Organizing Map, one for each color term. This would probably be more visually pleasing, but it would be challenging to directly observer smaller differences between color name borders.
 
