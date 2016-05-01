@@ -28,7 +28,7 @@ currentMouseOver[currentLanguages[1-currentSide]] = "";
 
 currentMouseOver[currentLanguages[1-currentSide]] = "";
 
-var N=80, M=40;
+var N=40, M=20;
 var d3Data =[];
 var svg, somNodes;
 
@@ -36,6 +36,8 @@ var somWidth = 800;
 var boxWidth = somWidth / N;
 var boxHeight = boxWidth;
 var somHeight = M * boxWidth;
+//var dash_width  = boxWidth / 3;
+var dash_width  = 2;
 
 
 function start(){
@@ -202,19 +204,21 @@ function updateSOM(testsom, divID){
 	 				.attr("height", boxHeight + .2)
 	 				.style("fill", function(d){ return "rgb(" + d.rgbColor.r + "," + d.rgbColor.g+ "," + d.rgbColor.b +")"});
 
+
 	//horizontal midline
 	somNodesEnter.append("line")
-				.attr("class","horizontal-line")
-				.attr("stroke",function(d){
-					var value = 0;
-					// var value = Math.round(256-d.lab[0]*256/100) > 128 ? 255 : 0;
-					// var value = Math.round(256-(d.color[0] + d.color[1] + d.color[2])/3);
-      		return 'rgb('+value+','+value+','+value+')';
-     			// return 'cielab(' + d.lab[0] +',0,0)'
-				})
+				.attr("class","horizontal-line black")
+				.attr("stroke", "black")
+				.attr("stroke-dasharray", function(){return dash_width + "," + dash_width })
 				.attr("stroke-width",".5")
+				
+	somNodesEnter.append("line")
+			.attr("class","horizontal-line white")
+			.attr("stroke", "white")
+			.attr("stroke-dasharray",  function(){return dash_width + "," + dash_width })
+			.attr("stroke-width",".5")
 					
-	somNodes.select(".horizontal-line")
+	somNodes.selectAll(".horizontal-line")
 				.attr("x1", function(d){ return (d.x) * boxWidth ; })
 				.attr("y1", function(d){ return (d.y + 0.5) * boxHeight - 1 ; })
 				.attr("x2", function(d){ return (d.x + 1) * boxWidth; })
@@ -224,21 +228,27 @@ function updateSOM(testsom, divID){
 						return 1;
 					return 0;
 					});
+	
+	somNodes.select(".horizontal-line.white")	
+		.attr("stroke-dashoffset", function(d){ return (d.x) * boxWidth });
+	somNodes.select(".horizontal-line.black")	
+		.attr("stroke-dashoffset", function(d){ return (d.x) * boxWidth  + dash_width});
 				
 	//vertical midline
 	somNodesEnter.append("line")
-				.attr("class","vertical-line")
-				.attr("stroke",function(d){
-					var value = 0;
-					// var value = Math.round(256-d.lab[0]*256/100) > 128 ? 255 : 0;
-      		return 'rgb('+value+','+value+','+value+')';
-     			// return 'cielab(' + d.lab[0] +',0,0)'
-
-				})
-				.attr("stroke-width",".5")	
+				.attr("class","vertical-line black")
+				.attr("stroke","black")
+				.attr("stroke-dasharray", function(){return dash_width + "," + dash_width })
+				.attr("stroke-width",".5")
+				
+	somNodesEnter.append("line")
+			.attr("class","vertical-line white")
+			.attr("stroke","white")
+			.attr("stroke-dasharray", function(){return dash_width + "," + dash_width })
+			.attr("stroke-width",".5")
 
 					
-	somNodes.select(".vertical-line")
+	somNodes.selectAll(".vertical-line")
 				.attr("x1", function(d){ return (d.x + 0.5) * boxWidth ; })
 				.attr("y1", function(d){ return (d.y) * boxHeight - 1 ; })
 				.attr("x2", function(d){ return (d.x + 0.5) * boxWidth; })
@@ -248,7 +258,11 @@ function updateSOM(testsom, divID){
 						return 1;
 					return 0;
 					});
-					
+	
+	somNodes.select(".vertical-line.white")	
+		.attr("stroke-dashoffset", function(d){ return (d.y) * boxHeight });
+	somNodes.select(".vertical-line.black")	
+		.attr("stroke-dashoffset", function(d){ return (d.y) * boxHeight  + dash_width});
 	
 					
 	somNodes.exit().remove();
